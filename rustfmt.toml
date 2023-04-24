@@ -1,0 +1,22 @@
+# Check out rustfmt at: https://rust-lang.github.io/rustfmt/
+
+edition = "2021"
+
+disable_all_formatting = false
+newline_style = "Unix"
+
+max_width = 100
+use_small_heuristics = "Max"
+
+fn_params_layout = "Tall"
+force_explicit_abi = true
+hard_tabs = false
+match_arm_leading_pipes = "Never"
+match_block_trailing_comma = true
+merge_derives = true
+remove_nested_parens = true
+reorder_imports = true
+reorder_modules = true
+tab_spaces = 4
+use_field_init_shorthand = true
+use_try_shorthand = true

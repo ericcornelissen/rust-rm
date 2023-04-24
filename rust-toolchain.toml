@@ -1,0 +1,9 @@
+# Check out rustup at: https://rust-lang.github.io/rustup/index.html
+
+[toolchain]
+channel = "1.69.0"
+components = [
+    "cargo",
+    "clippy",
+    "rustfmt",
+]

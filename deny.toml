@@ -1,0 +1,21 @@
+# Check out cargo-deny at: https://github.com/EmbarkStudios/cargo-deny
+
+[advisories]
+ignore = [
+    "RUSTSEC-2020-0071", # Per https://github.com/chronotope/chrono/pull/969
+]
+unmaintained = "warn"
+vulnerability = "deny"
+yanked = "deny"
+
+[licenses]
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "BSD-3-Clause",
+    "Unicode-DFS-2016",
+]
+deny = []
+default = "deny"
+unlicensed = "deny"
+confidence-threshold = 0.8

@@ -1,0 +1,34 @@
+# Check out Clippy at: https://rust-lang.github.io/rust-clippy/
+
+allowed-scripts = ["Latin"]
+avoid-breaking-exported-api = false
+single-char-binding-names-threshold = 1
+upper-case-acronyms-aggressive = true
+warn-on-all-wildcard-imports = false
+
+allow-dbg-in-tests = false
+allow-expect-in-tests = true
+allow-print-in-tests = false
+allow-unwrap-in-tests = false
+
+enum-variant-name-threshold = 2
+enum-variant-size-threshold = 200
+
+max-fn-params-bools = 1
+max-struct-bools = 3
+max-trait-bounds = 2
+max-suggested-slice-pattern-length = 3
+too-many-arguments-threshold = 3
+too-many-lines-threshold = 100
+
+arithmetic-side-effects-allowed = []
+arithmetic-side-effects-allowed-binary = []
+arithmetic-side-effects-allowed-unary = []
+
+disallowed-macros = []
+disallowed-methods = []
+disallowed-names = []
+disallowed-types = []
+enforced-import-renames = []
+
+doc-valid-idents = []

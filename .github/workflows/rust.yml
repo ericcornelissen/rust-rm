@@ -1,0 +1,291 @@
+name: Rust
+on:
+  pull_request:
+    paths:
+      - "**.rs"
+      - .github/workflows/rust.yml
+      - Cargo.lock
+      - Cargo.toml
+      - clippy.toml
+      - Justfile
+      - rust-toolchain.toml
+      - rustfmt.toml
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MacOS
+            os: macos-12
+          - name: Ubuntu
+            os: ubuntu-22.04
+          - name: Windows
+            os: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-all-features
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-all-features@1.9.0
+      - name: Build
+        run: just ci-build
+  build-nightly:
+    name: Build nightly (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MacOS
+            os: macos-12
+          - name: Ubuntu
+            os: ubuntu-22.04
+          - name: Windows
+            os: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: nightly-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-all-features
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-all-features@1.9.0
+      - name: Build
+        run: just ci-build
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-22.04
+    needs:
+      - test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-tarpaulin
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-tarpaulin@0.25.2
+      - name: Run all tests with coverage
+        run: just coverage
+      - name: Upload coverage report
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          name: coverage-report
+          path: _reports/coverage-all.html
+  docs:
+    name: Docs
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Build docs
+        run: just ci-docs
+  fmt:
+    name: Fmt
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Check formatting
+        run: just ci-fmt
+  test:
+    name: Test (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    needs:
+      - build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MacOS
+            os: macos-12
+          - name: Ubuntu
+            os: ubuntu-22.04
+          - name: Windows
+            os: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-all-features
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-all-features@1.9.0
+      - name: Run all tests
+        run: just ci-test
+  test-nightly:
+    name: Test nightly (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    needs:
+      - build-nightly
+      - test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: MacOS
+            os: macos-12
+          - name: Ubuntu
+            os: ubuntu-22.04
+          - name: Windows
+            os: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: nightly-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-all-features
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-all-features@1.9.0
+      - name: Run all tests
+        run: just ci-test
+  vet:
+    name: Vet
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-all-features
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-all-features@1.9.0
+      - name: Install cargo-msrv
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-msrv@0.15.1
+      - name: Vet
+        run: just ci-vet
