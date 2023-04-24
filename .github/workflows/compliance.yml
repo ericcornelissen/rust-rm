@@ -1,0 +1,43 @@
+name: Compliance
+on:
+  pull_request:
+    paths:
+      - .github/workflows/compliance.yml
+      - Cargo.lock
+      - Cargo.toml
+      - deny.toml
+      - Justfile
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  license:
+    name: License
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: just@1
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
+        with:
+          tool: cargo-deny@0.13.8
+      - name: Check compliance
+        run: just ci-compliance

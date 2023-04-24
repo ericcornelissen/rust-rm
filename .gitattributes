@@ -1,0 +1,4 @@
+* text=auto
+
+## Machine generated
+Cargo.lock -diff

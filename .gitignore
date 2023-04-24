@@ -1,0 +1,24 @@
+/_reports/
+/loc.rs
+
+## File systems
+.DS_Store
+desktop.ini
+
+## IDEs
+.idea/
+.vscode/
+
+## Profiling
+/profile_fs/
+/flamegraph.pl
+/perf.data
+/perf.data.old
+/perf.svg
+/stackcollapse-*.pl
+
+## Rust & Cargo
+/debug/
+/target/
+*.profraw
+**/*.rs.bk

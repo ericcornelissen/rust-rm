@@ -1,0 +1,52 @@
+[package]
+name = "rust-rm"
+version = "0.1.0"
+description = "A modern alternative to the rm(1) command"
+license = "MPL-2.0"
+authors = ["Eric Cornelissen <ericornelissen@gmail.com>"]
+repository = "https://github.com/ericcornelissen/rust-rm"
+keywords = ["cli", "rm", "trash"]
+categories = ["development-tools", "filesystem"]
+edition = "2021"
+rust-version = "1.64.0"
+
+[features]
+default = ["classic", "trash"]
+
+## Build features
+# Include support for the RUST_RM_CLASSIC environment variable
+classic = []
+# Include support for the --trash CLI option
+trash = ["dep:trash"]
+
+## Test-only features
+# Used for running dangerous tests conditionally.
+test-dangerous = []
+# Used for running test that move things to the trash conditionally.
+test-trash = []
+
+[dependencies]
+clap = { version = "4.1.1", features = ["derive"] }
+log = "0.4.17"
+trash = { version = "3.0.1", optional = true }
+
+[dev-dependencies]
+assert_cmd = { version = "2.0.8", features = ["color-auto"] }
+assert_fs = "1.0.10"
+predicates = "3.0.2"
+proptest = "1.0.0"
+proptest-attr-macro = "1.0.0"
+proptest-derive = "0.3.0"
+
+[profile.release]
+debug = false
+debug-assertions = false
+incremental = false
+lto = true
+opt-level = 3
+overflow-checks = false
+panic = "abort"
+strip = "debuginfo"
+
+[package.metadata.cargo-all-features]
+denylist = ["test-dangerous", "test-trash"]
