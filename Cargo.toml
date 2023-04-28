@@ -26,7 +26,7 @@ test-dangerous = []
 test-trash = []
 
 [dependencies]
-clap = { version = "4.1.1", features = ["derive"] }
+clap = { version = "4.2.5", features = ["derive"] }
 log = "0.4.17"
 trash = { version = "3.0.1", optional = true }
 
