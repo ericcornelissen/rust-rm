@@ -2424,7 +2424,7 @@ mod rm {
 
         #[test]
         #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
-        fn dir_filled_toctou() -> TestResult {
+        fn dir_filled() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
                 dir.create_dir_all()?;
@@ -2434,13 +2434,9 @@ mod rm {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = dispose(entry);
-                assert!(out.is_err());
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
-                let err = out.expect_err("is_err() should be asserted");
-                assert_eq!(err.kind(), fs::ErrorKind::DirectoryNotEmpty);
-                assert_eq!(err.path(), path);
-
-                dir.assert(predicate::path::exists());
+                dir.assert(predicate::path::missing());
 
                 Ok(())
             })
