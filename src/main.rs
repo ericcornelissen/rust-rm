@@ -43,8 +43,8 @@ mod cli {
     /// Does not remove anything by default, use either the option --force or --interactive to
     /// perform the removal.
     ///
-    /// Use the option --dir to remove empty directories, --recursive to recursively remove the
-    /// contents of non-empty directories, or both to remove directories and their contents.
+    /// Also does not remove directories by default, use the option --dir to remove empty
+    /// directories or the option --recursive to remove directories and their contents.
     ///
     /// To remove a file whose name starts with a '-', for example '-foo', use either the special
     /// '--' option or prefix the path with './'.
