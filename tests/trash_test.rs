@@ -9,8 +9,6 @@ pub mod common;
 
 use crate::common::{has_exactly_lines, rm_out, TestResult};
 
-use std::path::MAIN_SEPARATOR;
-
 use assert_fs::prelude::*;
 use predicates::prelude::*;
 
@@ -126,10 +124,9 @@ fn filled_directory() -> TestResult {
             .assert()
             .success()
             .stdout(has_exactly_lines!(
-                rm_out::dry_trashed(format!("{dirname}{MAIN_SEPARATOR}{filename}")),
                 rm_out::dry_trashed(dirname);
                 rm_out::newline(),
-                rm_out::dry_conclusion(2, 0),
+                rm_out::dry_conclusion(1, 0),
             ))
             .stderr("");
         dir.assert(predicate::path::exists());
@@ -139,10 +136,9 @@ fn filled_directory() -> TestResult {
             .assert()
             .success()
             .stdout(has_exactly_lines!(
-                rm_out::trashed(format!("{dirname}{MAIN_SEPARATOR}{filename}")),
                 rm_out::trashed(dirname);
                 rm_out::newline(),
-                rm_out::conclusion(2, 0),
+                rm_out::conclusion(1, 0),
             ))
             .stderr("");
         dir.assert(predicate::path::missing());
