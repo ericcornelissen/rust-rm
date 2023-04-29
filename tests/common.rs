@@ -157,27 +157,24 @@ pub(crate) use {has_exactly_lines, has_lines};
 /// ```
 pub mod rm_ask {
     pub fn descend<S: Into<String>>(subject: S) -> String {
-        format!("Descend into directory {}? [Y/n] {CLEARLINE}", subject.into())
+        format!("Descend into directory {}? [Y/n] ", subject.into())
     }
 
     pub fn dir<S: Into<String>>(subject: S) -> String {
-        format!("Remove directory {}? [Y/n] {CLEARLINE}", subject.into())
+        format!("Remove directory {}? [Y/n] ", subject.into())
     }
 
     pub fn empty_dir<S: Into<String>>(subject: S) -> String {
-        format!("Remove empty directory {}? [Y/n] {CLEARLINE}", subject.into())
+        format!("Remove empty directory {}? [Y/n] ", subject.into())
     }
 
     pub fn file<S: Into<String>>(subject: S) -> String {
-        format!("Remove regular file {}? [Y/n] {CLEARLINE}", subject.into())
+        format!("Remove regular file {}? [Y/n] ", subject.into())
     }
 
     pub fn link<S: Into<String>>(subject: S) -> String {
-        format!("Remove symbolic link {}? [Y/n] {CLEARLINE}", subject.into())
+        format!("Remove symbolic link {}? [Y/n] ", subject.into())
     }
-
-    /// String used to clear the current line on the terminal.
-    const CLEARLINE: &str = "\u{1b}[1A\u{1b}[2K";
 }
 
 /// Test helpers to generate strings outputted by the CLI.

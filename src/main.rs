@@ -33,6 +33,7 @@ mod cli {
     use clap::error::Error;
     use clap::Parser;
     use log::{error, info, trace};
+    use owo_colors::OwoColorize;
 
     #[cfg(test)]
     use proptest_derive::Arbitrary;
@@ -906,7 +907,11 @@ mod cli {
             "{}{removed} {}{}, {} occurred",
             if removed > 0 || errored > 0 || args.verbose { "\n" } else { "" },
             if dry_run { "would be removed" } else { "removed" },
-            if dry_run && removed > 0 { " (use '--force' to remove)" } else { "" },
+            if dry_run && removed > 0 {
+                format!(" {}", "(use '--force' to remove)".italic())
+            } else {
+                String::new()
+            },
             lang::pluralize("error", errored),
         );
 
@@ -1178,6 +1183,7 @@ mod fs {
     use std::path::{Path, PathBuf};
 
     use log::trace;
+    use owo_colors::OwoColorize;
 
     #[cfg(test)]
     use proptest_derive::Arbitrary;
@@ -1693,9 +1699,15 @@ mod fs {
     impl std::fmt::Display for Error {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             if let Some(tip) = &self.tip {
-                write!(f, "Cannot remove {}: {} ({})", self.path().display(), self.kind, tip)
+                write!(
+                    f,
+                    "Cannot remove {}: {} {}",
+                    self.path().display().bold(),
+                    self.kind,
+                    format!("({tip})").italic()
+                )
             } else {
-                write!(f, "Cannot remove {}: {}", self.path().display(), self.kind,)
+                write!(f, "Cannot remove {}: {}", self.path().display().bold(), self.kind)
             }
         }
     }
@@ -1707,6 +1719,7 @@ mod fs {
     mod test_error {
         use super::{Entry, EntryKind, Error, ErrorKind};
 
+        use owo_colors::OwoColorize;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -1723,10 +1736,10 @@ mod fs {
             prop_assert_eq!(
                 err.to_string(),
                 format!(
-                    "Cannot remove {}: {} ({})",
-                    err.path().display(),
+                    "Cannot remove {}: {} {}",
+                    err.path().display().bold(),
                     err.kind(),
-                    err.tip.expect("")
+                    format!("({})", err.tip.expect("is_some() should be asserted")).italic(),
                 )
             );
         }
@@ -1737,7 +1750,7 @@ mod fs {
 
             prop_assert_eq!(
                 err.to_string(),
-                format!("Cannot remove {}: {}", err.path().display(), err.kind())
+                format!("Cannot remove {}: {}", err.path().display().bold(), err.kind())
             );
         }
 
@@ -2311,6 +2324,7 @@ mod rm {
     use super::fs;
 
     use log::trace;
+    use owo_colors::OwoColorize;
 
     /// The `Result` type for removing an [`fs::Entry`].
     pub type Result = std::result::Result<String, fs::Error>;
@@ -2332,7 +2346,7 @@ mod rm {
         }
 
         match trash::delete(entry.path()) {
-            Ok(()) => Ok(format!("Moved {entry} to trash")),
+            Ok(()) => Ok(format!("Moved {} to trash", entry.bold())),
             Err(err) => Err(entry.into_err(err.into())),
         }
     }
@@ -2346,6 +2360,7 @@ mod rm {
         use super::{dispose, fs};
 
         use assert_fs::prelude::*;
+        use owo_colors::OwoColorize;
         use predicates::prelude::*;
 
         #[test]
@@ -2359,7 +2374,7 @@ mod rm {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 file.assert(predicate::path::missing());
 
@@ -2399,7 +2414,7 @@ mod rm {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 dir.assert(predicate::path::missing());
 
@@ -2465,7 +2480,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 file.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2487,7 +2502,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 dir.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2511,7 +2526,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 dir.assert(predicate::path::exists());
                 nested_file.assert(predicate::path::exists());
@@ -2555,7 +2570,7 @@ mod rm {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 file.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2577,7 +2592,7 @@ mod rm {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = dispose(entry);
-                assert_eq!(out, Ok(format!("Moved {} to trash", path.display())));
+                assert_eq!(out, Ok(format!("Moved {} to trash", path.display().bold())));
 
                 dir.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2612,7 +2627,7 @@ mod rm {
         };
 
         match result {
-            Ok(()) => Ok(format!("Removed {entry}")),
+            Ok(()) => Ok(format!("Removed {}", entry.bold())),
             Err(err) => Err(entry.into_err(err.kind().into())),
         }
     }
@@ -2625,6 +2640,7 @@ mod rm {
         use super::{fs, remove};
 
         use assert_fs::prelude::*;
+        use owo_colors::OwoColorize;
         use predicates::prelude::*;
 
         #[test]
@@ -2637,7 +2653,7 @@ mod rm {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 file.assert(predicate::path::missing());
 
@@ -2674,7 +2690,7 @@ mod rm {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 dir.assert(predicate::path::missing());
 
@@ -2736,7 +2752,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 file.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2758,7 +2774,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 dir.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2782,7 +2798,7 @@ mod rm {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 dir.assert(predicate::path::exists());
                 nested_file.assert(predicate::path::exists());
@@ -2823,7 +2839,7 @@ mod rm {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = remove(entry);
-                assert_eq!(out, Ok(format!("Removed {}", path.display())));
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
 
                 file.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
@@ -2865,7 +2881,7 @@ mod rm {
     #[cfg(feature = "trash")]
     #[allow(clippy::needless_pass_by_value, clippy::unnecessary_wraps)]
     pub fn show_dispose(entry: fs::Entry) -> Result {
-        Ok(format!("Would move {entry} to trash"))
+        Ok(format!("Would move {} to trash", entry.bold()))
     }
 
     /// Tests for the [`show_dispose`] function.
@@ -2874,6 +2890,7 @@ mod rm {
     mod test_show_dispose {
         use super::{fs, show_dispose};
 
+        use owo_colors::OwoColorize;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -2881,7 +2898,7 @@ mod rm {
         fn anything(entry: fs::Entry) {
             let path = entry.path();
             let out = show_dispose(entry);
-            prop_assert_eq!(out, Ok(format!("Would move {} to trash", path.display())));
+            prop_assert_eq!(out, Ok(format!("Would move {} to trash", path.display().bold())));
         }
     }
 
@@ -2894,7 +2911,7 @@ mod rm {
     /// This function will never return an error.
     #[allow(clippy::needless_pass_by_value, clippy::unnecessary_wraps)]
     pub fn show_remove(entry: fs::Entry) -> Result {
-        Ok(format!("Would remove {entry}"))
+        Ok(format!("Would remove {}", entry.bold()))
     }
 
     /// Tests for the [`show_remove`] function.
@@ -2902,6 +2919,7 @@ mod rm {
     mod test_show_remove {
         use super::{fs, show_remove};
 
+        use owo_colors::OwoColorize;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -2909,7 +2927,7 @@ mod rm {
         fn anything(entry: fs::Entry) {
             let path = entry.path();
             let out = show_remove(entry);
-            prop_assert_eq!(out, Ok(format!("Would remove {}", path.display())));
+            prop_assert_eq!(out, Ok(format!("Would remove {}", path.display().bold())));
         }
     }
 }
@@ -2919,6 +2937,8 @@ mod transform {
     use super::fs;
 
     use std::io;
+
+    use owo_colors::OwoColorize;
 
     /// A function that may change a [`fs::Result`] into a different-but-related [`fs::Result`].
     pub type Transformer = fn(fs::Result) -> fs::Result;
@@ -3321,7 +3341,7 @@ mod transform {
     pub fn interactive(entry: fs::Result) -> fs::Result {
         match entry {
             Ok(entry) if !entry.is_skipped() => Ok(interact_transform(
-                prompt(&new_prompt_for(&entry), &mut io::stdin().lock(), &mut io::stderr()),
+                prompt(&new_prompt_for(&entry), &mut io::stdin().lock(), &mut anstream::stderr()),
                 entry,
             )),
             _ => entry,
@@ -3344,7 +3364,7 @@ mod transform {
             fs::EntryKind::Symlink => "Remove symbolic link",
         };
 
-        format!("{question} {entry}? [Y/n] ")
+        format!("{question} {}? [Y/n] ", entry.bold())
     }
 
     /// Print the given string to the user, wait for user input, and return the user input.
@@ -3395,6 +3415,7 @@ mod transform {
         use std::io;
 
         use assert_fs::prelude::*;
+        use owo_colors::OwoColorize;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
         use proptest_derive::Arbitrary;
@@ -3425,7 +3446,7 @@ mod transform {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3441,7 +3462,7 @@ mod transform {
                 let entry = fs::test_helpers::new_file(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3457,7 +3478,10 @@ mod transform {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove empty directory {}? [Y/n] ", path.display()));
+                assert_eq!(
+                    out,
+                    format!("Remove empty directory {}? [Y/n] ", path.display().bold())
+                );
 
                 Ok(())
             })
@@ -3473,7 +3497,10 @@ mod transform {
                 let entry = fs::test_helpers::new_dir(path).into_visited();
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove empty directory {}? [Y/n] ", path.display()));
+                assert_eq!(
+                    out,
+                    format!("Remove empty directory {}? [Y/n] ", path.display().bold())
+                );
 
                 Ok(())
             })
@@ -3490,7 +3517,10 @@ mod transform {
                 let entry = fs::test_helpers::new_dir(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Descend into directory {}? [Y/n] ", path.display()));
+                assert_eq!(
+                    out,
+                    format!("Descend into directory {}? [Y/n] ", path.display().bold())
+                );
 
                 Ok(())
             })
@@ -3507,7 +3537,7 @@ mod transform {
                 let entry = fs::test_helpers::new_dir(path).into_visited();
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove directory {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove directory {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3525,7 +3555,7 @@ mod transform {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3543,7 +3573,7 @@ mod transform {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3562,7 +3592,7 @@ mod transform {
                 let entry = fs::test_helpers::new_symlink(path);
 
                 let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display()));
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
             })
@@ -3773,12 +3803,14 @@ mod logging {
             // don't need to flush with `(e)println!`
         }
 
-        #[allow(clippy::print_stderr, clippy::print_stdout)]
         fn log(&self, record: &log::Record<'_>) {
+            use anstream::{eprintln, println};
+            use owo_colors::OwoColorize;
+
             match record.level() {
                 log::Level::Error => eprintln!("{}", record.args()),
                 log::Level::Info => println!("{}", record.args()),
-                log::Level::Trace => println!("[{}]", record.args()),
+                log::Level::Trace => println!("{}", format!("[{}]", record.args()).italic()),
                 _ => unreachable!(),
             }
         }
