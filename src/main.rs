@@ -861,6 +861,13 @@ mod cli {
             if args.interactive { transform::interactive } else { transform::identity },
         ];
 
+        #[cfg(feature = "trash")]
+        let walk = if args.recursive && !args.trash {
+            walk::recurse(transformers)
+        } else {
+            walk::given(transformers)
+        };
+        #[cfg(not(feature = "trash"))]
         let walk =
             if args.recursive { walk::recurse(transformers) } else { walk::given(transformers) };
 
@@ -1937,7 +1944,12 @@ mod walk {
 
     /// Create a [`Walker`] that only visits the given file system entry.
     pub fn given(transformers: Transformers) -> Walker {
-        Box::new(move |path| Box::new(iter::once(transform_entry(fs::open(path), transformers))))
+        Box::new(move |path| {
+            Box::new(iter::once(transform_entry(
+                fs::open(path).map(fs::Entry::into_visited),
+                transformers,
+            )))
+        })
     }
 
     /// Tests for the [`given`] function.
@@ -1958,7 +1970,7 @@ mod walk {
                 let path = file.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -1973,7 +1985,7 @@ mod walk {
                 let path = dir.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -1989,7 +2001,7 @@ mod walk {
                 let path = dir.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -2006,7 +2018,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -2023,7 +2035,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -2041,7 +2053,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path)]);
+                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
 
                 Ok(())
             })
@@ -2337,13 +2349,6 @@ mod rm {
     #[cfg(feature = "trash")]
     pub fn dispose(entry: fs::Entry) -> Result {
         trace!("dispose of {entry}");
-
-        if entry.is_dir() && !fs::is_empty(&entry) {
-            // This explicit check is necessary because the trash crate will move non-empty dirs to
-            // the trash. This check narrows the TOCTOU window but does not eliminate it. Since this
-            // action is revertable this risk is considered acceptable.
-            return Err(entry.into_err(fs::ErrorKind::DirectoryNotEmpty));
-        }
 
         match trash::delete(entry.path()) {
             Ok(()) => Ok(format!("Moved {} to trash", entry.bold())),

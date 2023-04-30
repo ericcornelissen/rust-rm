@@ -508,6 +508,33 @@ fn remove_filled_dir_recursive_descend_but_keep_content_and_remove_dir() -> Test
 }
 
 #[test]
+#[cfg(feature = "trash")]
+#[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+fn remove_filled_dir_recursive_trash() -> TestResult {
+    let dirname = "dir";
+
+    with_test_dir(|mut cmd, test_dir| {
+        let dir = test_dir.child(dirname);
+        dir.create_dir_all()?;
+        dir.child("file").touch()?;
+
+        cmd.args(["--recursive", "--trash", dirname])
+            .write_stdin(format!("{YES}{ENTER}"))
+            .assert()
+            .success()
+            .stdout(has_exactly_lines!(
+                rm_out::trashed(dirname),
+                rm_out::newline(),
+                rm_out::conclusion(1, 0)
+            ))
+            .stderr(has_exactly_lines!(rm_ask::dir(dirname)));
+        dir.assert(predicate::path::missing());
+
+        Ok(())
+    })
+}
+
+#[test]
 fn answer_uppercase_n() -> TestResult {
     test_answer_no("N")
 }
