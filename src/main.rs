@@ -6,6 +6,7 @@
 #![deny(rustdoc::invalid_codeblock_attributes)]
 #![deny(rustdoc::invalid_html_tags)]
 #![deny(rustdoc::bare_urls)]
+#![feature(io_error_more)]
 
 //! A CLI like the `rm(1)` Unix command but more modern and designed for humans. Aims to provide an
 //! `rm` command that feels familiar yet is safer and more user friendly.
@@ -1828,6 +1829,7 @@ mod fs {
     impl From<io::ErrorKind> for ErrorKind {
         fn from(val: io::ErrorKind) -> Self {
             match val {
+                io::ErrorKind::DirectoryNotEmpty => Self::DirectoryNotEmpty,
                 io::ErrorKind::NotFound => Self::NotFound,
                 io::ErrorKind::PermissionDenied => Self::PermissionDenied,
                 _ => Self::Unknown,
@@ -2612,14 +2614,6 @@ mod rm {
         use std::fs::{remove_dir, remove_file};
 
         trace!("remove {entry}");
-
-        if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.69, the `io::ErrorKind` variant
-            // is still experimental (gate "io_error_more") and so would result in an unknown error.
-            // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
-            // safely as `std::fs::remove_dir` doesn't remove non-empty directories.
-            return Err(entry.into_err(fs::ErrorKind::DirectoryNotEmpty));
-        }
 
         let path = entry.path();
         let result = match entry.kind() {
