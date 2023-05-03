@@ -8,7 +8,6 @@ repository = "https://github.com/ericcornelissen/rust-rm"
 keywords = ["cli", "rm", "trash"]
 categories = ["development-tools", "filesystem"]
 edition = "2021"
-rust-version = "1.64.0"
 
 [features]
 default = ["classic", "trash"]
