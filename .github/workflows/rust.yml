@@ -283,9 +283,5 @@ jobs:
         uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
         with:
           tool: cargo-all-features@1.9.0
-      - name: Install cargo-msrv
-        uses: taiki-e/install-action@7522ae03ca435a0ad1001ca93d6cd7cb8e81bd2f # v2.6.18
-        with:
-          tool: cargo-msrv@0.15.1
       - name: Vet
         run: just ci-vet

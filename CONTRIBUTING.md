@@ -107,7 +107,6 @@ To be able to contribute you need the following tooling:
 - [Rust] and [Cargo] v1.69 (edition 2021) with [Clippy], [rustfmt] (see `rust-toolchain.toml`);
 - (Optional) [cargo-all-features] v1.7.0 or later;
 - (Optional) [cargo-deny] v0.13.0 or later;
-- (Optional) [cargo-msrv] v0.14.0 or later;
 - (Optional) [cargo-tarpaulin] v0.25.0 or later;
 - (Suggested) a code editor with [EditorConfig] support;
 
@@ -120,7 +119,6 @@ To be able to contribute you need the following tooling:
 [rustfmt]: https://rust-lang.github.io/rustfmt/
 [cargo-all-features]: https://github.com/frewsxcv/cargo-all-features
 [cargo-deny]: https://github.com/EmbarkStudios/cargo-deny
-[cargo-msrv]: https://github.com/foresterre/cargo-msrv
 [cargo-tarpaulin]: https://github.com/xd009642/tarpaulin
 
 ### Workflow
