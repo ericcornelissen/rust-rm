@@ -141,7 +141,8 @@ The development of this software is guided by the following principles:
 
 ## License
 
-This project is licensed under the Mozilla Public License 2.0 license, see [LICENSE] for the full
-license text.
+All source code is licensed under the Apache 2.0 license, see [LICENSE] for the full license text.
+The contents of documentation is licensed under [CC BY 4.0].
 
+[cc by 4.0]: https://creativecommons.org/licenses/by/4.0/
 [license]: ./LICENSE
