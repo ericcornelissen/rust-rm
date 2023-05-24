@@ -35,7 +35,7 @@ trash = { version = "3.0.2", optional = true }
 assert_cmd = { version = "2.0.8", features = ["color-auto"] }
 assert_fs = "1.0.10"
 predicates = "3.0.2"
-proptest = "1.0.0"
+proptest = "1.2.0"
 proptest-attr-macro = "1.0.0"
 proptest-derive = "0.3.0"
 
