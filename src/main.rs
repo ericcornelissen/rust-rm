@@ -761,10 +761,10 @@ mod cli {
 
     /// The environment variable name to enable compatibility mode with the `rm(1)` Unix command.
     #[cfg(feature = "classic")]
-    static CLASSIC_MODE: &str = "RUST_RM_CLASSIC";
+    const CLASSIC_MODE: &str = "RUST_RM_CLASSIC";
 
     /// A standard environment variable name to enable verbose mode.
-    static DEBUG_MODE: &str = "DEBUG";
+    const DEBUG_MODE: &str = "DEBUG";
 
     /// Struct representing parsed environment configuration values.
     #[cfg_attr(test, derive(Arbitrary, Clone, Copy, Debug))]
@@ -3824,7 +3824,7 @@ mod test_helpers {
     use assert_fs::TempDir;
 
     /// The environment variable name to enable debugging mode for tests.
-    static TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
+    const TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
 
     /// The `Result` type used by [`with_test_dir`].
     pub type TestResult = Result<(), Box<dyn std::error::Error>>;

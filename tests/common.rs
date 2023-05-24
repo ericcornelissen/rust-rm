@@ -297,7 +297,7 @@ pub mod rm_out {
 }
 
 /// The environment variable name to enable debugging mode for tests.
-static TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
+const TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
 
 /// The `Result` type used by [`with_test_dir`].
 pub type TestResult = Result<(), Box<dyn std::error::Error>>;
