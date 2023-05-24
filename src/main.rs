@@ -852,7 +852,7 @@ mod cli {
         let transformers: [transform::Transformer; 5] = [
             transform::disallow_current_and_parent_dir,
             if args.no_preserve_root { transform::identity } else { transform::disallow_root },
-            if args.blind { transform::skip_missing_entry } else { transform::tip_not_found },
+            if args.blind { transform::skip_not_found } else { transform::tip_not_found },
             match (args.dir, args.recursive) {
                 (false, false) => transform::disallow_all_dirs,
                 (true, false) => transform::disallow_filled_dirs,
@@ -3234,7 +3234,7 @@ mod transform {
 
     /// Transform [`fs::ErrorKind::NotFound`] errors into skipped [`fs::Entry`]s. Return all other
     /// values untouched.
-    pub fn skip_missing_entry(entry: fs::Result) -> fs::Result {
+    pub fn skip_not_found(entry: fs::Result) -> fs::Result {
         match entry {
             Err(err) if err.kind() == fs::ErrorKind::NotFound => {
                 Ok(err.into_skipped(SKIP_REASON_NOT_FOUND))
@@ -3243,17 +3243,17 @@ mod transform {
         }
     }
 
-    /// Tests for the [`skip_missing_entry`] function.
+    /// Tests for the [`skip_not_found`] function.
     #[cfg(test)]
-    mod test_skip_missing_entry {
-        use super::{fs, skip_missing_entry};
+    mod test_skip_not_found {
+        use super::{fs, skip_not_found};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
         fn entry(entry: fs::Entry) {
-            let out = skip_missing_entry(Ok(entry.clone()));
+            let out = skip_not_found(Ok(entry.clone()));
             prop_assert_eq!(out, Ok(entry));
         }
 
@@ -3262,7 +3262,7 @@ mod transform {
             let err = entry.into_err(fs::ErrorKind::NotFound);
             let path = err.path();
 
-            let out = skip_missing_entry(Err(err));
+            let out = skip_not_found(Err(err));
             prop_assert!(out.is_ok());
 
             let entry = out.expect("is_ok() should be asserted");
@@ -3274,7 +3274,7 @@ mod transform {
         fn error_other_than_not_found(err: fs::Error) {
             prop_assume!(err.kind() != fs::ErrorKind::NotFound);
 
-            let out = skip_missing_entry(Err(err.clone()));
+            let out = skip_not_found(Err(err.clone()));
             prop_assert_eq!(out, Err(err));
         }
     }
