@@ -2938,6 +2938,7 @@ mod transform {
     use super::fs;
 
     use std::io;
+    use std::path::Path;
 
     use owo_colors::OwoColorize;
 
@@ -3026,11 +3027,16 @@ mod transform {
     /// Return all other values untouched.
     pub fn disallow_current_and_parent_dir(entry: fs::Result) -> fs::Result {
         match entry {
-            Ok(entry) if entry.path().ends_with(".") || entry.path().ends_with("..") => {
+            Ok(entry) if is_current_or_parent_dir(entry.path()) => {
                 Err(entry.into_err(fs::ErrorKind::Refused))
             },
             _ => entry,
         }
+    }
+
+    /// Check if the given [`Path`] is the current directory or parent directory.
+    fn is_current_or_parent_dir<P: AsRef<Path>>(path: P) -> bool {
+        path.as_ref().ends_with(".") || path.as_ref().ends_with("..")
     }
 
     /// Tests for the [`disallow_current_and_parent_dir`] function.
@@ -3182,11 +3188,14 @@ mod transform {
     /// untouched.
     pub fn disallow_root(entry: fs::Result) -> fs::Result {
         match entry {
-            Ok(entry) if entry.path().parent().is_none() => {
-                Err(entry.into_err(fs::ErrorKind::Refused))
-            },
+            Ok(entry) if is_root(entry.path()) => Err(entry.into_err(fs::ErrorKind::Refused)),
             _ => entry,
         }
+    }
+
+    /// Check if the given [`Path`] is the file system root.
+    fn is_root<P: AsRef<Path>>(path: P) -> bool {
+        path.as_ref().parent().is_none()
     }
 
     /// Tests for the [`disallow_root`] function.
