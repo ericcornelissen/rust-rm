@@ -181,6 +181,7 @@ _profile_prepare:
 		--deny clippy::dbg_macro \
 		--deny clippy::disallowed_script_idents \
 		--deny clippy::expect_used \
+		--deny clippy::let_underscore_untyped \
 		--deny clippy::if_then_some_else_none \
 		--deny clippy::impl_trait_in_params \
 		--deny clippy::indexing_slicing \

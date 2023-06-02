@@ -3044,7 +3044,7 @@ mod transform {
     mod test_disallow_current_and_parent_dir {
         use super::{disallow_current_and_parent_dir, fs};
 
-        use std::path::{Path, MAIN_SEPARATOR};
+        use std::path::{Path, MAIN_SEPARATOR_STR};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -3061,7 +3061,7 @@ mod transform {
 
         #[proptest]
         fn entry_current_directory(path: CurrentDirPath) {
-            let path = path.0.replace('/', &MAIN_SEPARATOR.to_string());
+            let path = path.0.replace('/', MAIN_SEPARATOR_STR);
             let entry = fs::test_helpers::new_dir(&path);
 
             let out = disallow_current_and_parent_dir(Ok(entry));
@@ -3074,7 +3074,7 @@ mod transform {
 
         #[proptest]
         fn entry_parent_directory(path: ParentDirPath) {
-            let path = path.0.replace('/', &MAIN_SEPARATOR.to_string());
+            let path = path.0.replace('/', MAIN_SEPARATOR_STR);
             let entry = fs::test_helpers::new_dir(&path);
 
             let out = disallow_current_and_parent_dir(Ok(entry));
