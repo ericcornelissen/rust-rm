@@ -886,17 +886,6 @@ mod cli {
             .paths
             .iter()
             .flat_map(|path| walk(path))
-            .inspect(|result| {
-                if let Ok(entry) = result {
-                    if let Some(reason) = entry.skip_reason() {
-                        trace!("skipped {entry}: {reason}");
-                    }
-                }
-            })
-            .filter(|result| match result {
-                Ok(entry) => !entry.is_skipped(),
-                Err(_) => true,
-            })
             .map(|result| match result {
                 Ok(entry) => remove(entry),
                 Err(err) => Err(err),
@@ -1489,23 +1478,12 @@ mod fs {
 
         /// The path to the file system entry.
         path: OsString,
-
-        /// Why, if at all, the CLI must skip the file system entry.
-        skip_reason: Option<String>,
-
-        /// Whether or not the CLI visited the file system entry before.
-        visited: bool,
     }
 
     impl Entry {
         /// Create a new [`Entry`].
         fn new<P: AsRef<Path>>(path: P, kind: EntryKind) -> Self {
-            Self {
-                kind,
-                path: path.as_ref().as_os_str().to_owned(),
-                skip_reason: None,
-                visited: false,
-            }
+            Self { kind, path: path.as_ref().as_os_str().to_owned() }
         }
 
         /// Convert the [`Entry`] into an [`Error`] for the [`Entry`]'s path with the given
@@ -1514,32 +1492,9 @@ mod fs {
             Error::new(self.path(), kind)
         }
 
-        /// Convert the [`Entry`] into an [`Entry`] that will not be removed. Must be provided with
-        /// the reason why it is skipped.
-        pub fn into_skipped(mut self, reason: &str) -> Self {
-            self.skip_reason = Some(reason.to_owned());
-            self
-        }
-
-        /// Convert the [`Entry`] into an [`Entry`] that's marked as visited.
-        pub fn into_visited(mut self) -> Self {
-            self.visited = true;
-            self
-        }
-
         /// Returns `true` if the [`Entry`] is a directory.
         pub fn is_dir(&self) -> bool {
             matches!(self.kind, EntryKind::Dir)
-        }
-
-        /// Returns `true` if the [`Entry`] should not be removed.
-        pub fn is_skipped(&self) -> bool {
-            self.skip_reason.is_some()
-        }
-
-        /// Returns `true` if the [`Entry`] has been (marked as) visited.
-        pub fn is_visited(&self) -> bool {
-            self.visited
         }
 
         /// Get the kind of the [`Entry`].
@@ -1550,13 +1505,6 @@ mod fs {
         /// Get the path to the [`Entry`].
         pub fn path(&self) -> PathBuf {
             Path::new(&self.path).to_owned()
-        }
-
-        /// Returns the reason why the [`Entry`] should not be removed, if any.
-        ///
-        /// See also `is_skipped`.
-        pub fn skip_reason(&self) -> Option<String> {
-            self.skip_reason.clone()
         }
     }
 
@@ -1590,10 +1538,7 @@ mod fs {
 
         #[proptest]
         fn new(path: String, kind: EntryKind) {
-            prop_assert_eq!(
-                Entry::new(&path, kind.clone()),
-                Entry { path: path.into(), kind, skip_reason: None, visited: false }
-            );
+            prop_assert_eq!(Entry::new(&path, kind.clone()), Entry { kind, path: path.into() });
         }
 
         #[proptest]
@@ -1610,38 +1555,8 @@ mod fs {
         }
 
         #[proptest]
-        fn into_skipped(entry: Entry, reason: String) {
-            let path = entry.path.clone();
-            let kind = entry.kind.clone();
-            let visited = entry.visited;
-
-            let err = entry.into_skipped(&reason);
-            prop_assert_eq!(err, Entry { kind, path, skip_reason: Some(reason), visited });
-        }
-
-        #[proptest]
-        fn into_visited(entry: Entry) {
-            let path = entry.path.clone();
-            let kind = entry.kind.clone();
-            let skip_reason = entry.skip_reason.clone();
-
-            let err = entry.into_visited();
-            prop_assert_eq!(err, Entry { kind, path, skip_reason, visited: true });
-        }
-
-        #[proptest]
         fn is_dir(entry: Entry) {
             prop_assert_eq!(entry.is_dir(), matches!(entry.kind, EntryKind::Dir));
-        }
-
-        #[proptest]
-        fn is_skipped(entry: Entry) {
-            prop_assert_eq!(entry.is_skipped(), entry.skip_reason.is_some());
-        }
-
-        #[proptest]
-        fn is_visited(entry: Entry) {
-            prop_assert_eq!(entry.is_visited(), entry.visited);
         }
 
         #[proptest]
@@ -1652,11 +1567,6 @@ mod fs {
         #[proptest]
         fn path(entry: Entry) {
             prop_assert_eq!(entry.path(), entry.path);
-        }
-
-        #[proptest]
-        fn skip_reason(entry: Entry) {
-            prop_assert_eq!(entry.skip_reason(), entry.skip_reason);
         }
     }
 
@@ -1683,12 +1593,6 @@ mod fs {
         /// Get the kind of the [`Error`].
         pub fn kind(&self) -> ErrorKind {
             self.kind.clone()
-        }
-
-        /// Convert the [`Error`] into a skipped [`Entry`].
-        pub fn into_skipped(self, reason: &str) -> Entry {
-            // Note: the `EntryKind` can't be known as the error may be for a missing path.
-            Entry::new(self.path(), EntryKind::File).into_skipped(reason)
         }
 
         /// Get the file system path this [`Error`] is associated with.
@@ -1724,7 +1628,7 @@ mod fs {
     /// Tests for the [`Error`] struct.
     #[cfg(test)]
     mod test_error {
-        use super::{Entry, EntryKind, Error, ErrorKind};
+        use super::{Error, ErrorKind};
 
         use owo_colors::OwoColorize;
         use proptest::prelude::*;
@@ -1764,14 +1668,6 @@ mod fs {
         #[proptest]
         fn kind(err: Error) {
             prop_assert_eq!(err.kind(), err.kind);
-        }
-
-        #[proptest]
-        fn into_skipped(err: Error, reason: String) {
-            let path = err.path();
-
-            let entry = err.into_skipped(&reason);
-            prop_assert_eq!(entry, Entry::new(path, EntryKind::File).into_skipped(&reason));
         }
 
         #[proptest]
@@ -1931,7 +1827,12 @@ mod walk {
 
     use std::fs::read_dir;
     use std::iter;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
+
+    use log::trace;
+
+    #[cfg(test)]
+    use proptest_derive::Arbitrary;
 
     /// The return type of a file system [`Walker`].
     type FileIterator = Box<dyn Iterator<Item = fs::Result>>;
@@ -1942,14 +1843,101 @@ mod walk {
     /// A "file system walker" - a function that iterates over entries on a file system.
     pub type Walker = Box<dyn Fn(&dyn AsRef<Path>) -> FileIterator>;
 
+    /// Struct representing an item while walking the file system.
+    #[cfg_attr(test, derive(Arbitrary, Clone, Debug, Eq, PartialEq))]
+    pub struct Item {
+        /// The [`fs::Result`] this item represents.
+        pub inner: fs::Result,
+
+        /// Why, if at all, the item must be skipped.
+        skip_reason: Option<String>,
+
+        /// Whether or not the item has already been visited.
+        visited: bool,
+    }
+
+    impl Item {
+        /// Convert the [`Item`] into an [`Item`] that will be skipped. Must be provided with the
+        /// reason why it is skipped.
+        pub fn into_skipped(mut self, reason: &str) -> Self {
+            self.skip_reason = Some(reason.to_owned());
+            self
+        }
+
+        /// Convert the [`Item`] into an [`Item`] that's marked as visited.
+        fn into_visited(mut self) -> Self {
+            self.visited = true;
+            self
+        }
+
+        /// Returns `true` if the [`Item`] has been visited before.
+        pub fn is_visited(&self) -> bool {
+            self.visited
+        }
+
+        /// Get the file system path this [`Item`] is associated with.
+        fn path(&self) -> PathBuf {
+            self.inner.as_ref().map_or_else(fs::Error::path, fs::Entry::path)
+        }
+    }
+
+    /// Tests for the [`Item`] struct.
+    #[cfg(test)]
+    mod test_item {
+        use super::{fs, Item};
+
+        use proptest::prelude::*;
+        use proptest_attr_macro::proptest;
+
+        #[proptest]
+        fn into_skipped(item: Item, reason: String) {
+            let inner = item.inner.clone();
+            let visited = item.visited;
+
+            prop_assert_eq!(
+                item.into_skipped(&reason),
+                Item { inner, skip_reason: Some(reason), visited }
+            );
+        }
+
+        #[proptest]
+        fn into_visited(item: Item) {
+            let inner = item.inner.clone();
+            let skip_reason = item.skip_reason.clone();
+
+            prop_assert_eq!(item.into_visited(), Item { inner, skip_reason, visited: true });
+        }
+
+        #[proptest]
+        fn is_visited(item: Item) {
+            prop_assert_eq!(item.is_visited(), item.visited);
+        }
+
+        #[proptest]
+        fn path_entry(entry: fs::Entry) {
+            let item: Item = entry.clone().into();
+            prop_assert_eq!(item.path(), entry.path());
+        }
+
+        #[proptest]
+        fn path_error(err: fs::Error) {
+            let item: Item = err.clone().into();
+            prop_assert_eq!(item.path(), err.path());
+        }
+    }
+
+    /// Open an [`Item`] for walking the file system.
+    ///
+    /// # Errors
+    ///
+    /// If nothing is accessible at the given path.
+    fn open<P: AsRef<Path>>(path: P) -> Item {
+        Item { inner: fs::open(path), skip_reason: None, visited: false }
+    }
+
     /// Create a [`Walker`] that only visits the given file system entry.
     pub fn given(transformers: Transformers) -> Walker {
-        Box::new(move |path| {
-            Box::new(iter::once(transform_entry(
-                fs::open(path).map(fs::Entry::into_visited),
-                transformers,
-            )))
-        })
+        Box::new(move |path| Box::new(visit(open(path).into_visited(), transformers).into_iter()))
     }
 
     /// Tests for the [`given`] function.
@@ -1970,7 +1958,7 @@ mod walk {
                 let path = file.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -1985,7 +1973,7 @@ mod walk {
                 let path = dir.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -2001,7 +1989,7 @@ mod walk {
                 let path = dir.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -2018,7 +2006,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -2035,7 +2023,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -2053,7 +2041,7 @@ mod walk {
                 let path = link.path();
 
                 let out = given(path);
-                assert_eq!(out, vec![fs::open(path).map(fs::Entry::into_visited)]);
+                assert_eq!(out, vec![fs::open(path)]);
 
                 Ok(())
             })
@@ -2087,22 +2075,30 @@ mod walk {
 
     /// Walk the subsection of the file system with `path` as root.
     fn recurse_path<P: AsRef<Path>>(path: P, transformers: Transformers) -> FileIterator {
-        match transform_entry(fs::open(path), transformers) {
-            Ok(dir) if !dir.is_skipped() && dir.is_dir() && !fs::is_empty(&dir) => {
-                match read_dir(dir.path()) {
+        Box::new(visit(open(path), transformers).into_iter().flat_map(move |result| {
+            match result {
+                Ok(dir) if dir.is_dir() && !fs::is_empty(&dir) => match read_dir(dir.path()) {
                     Ok(content) => Box::new(
                         content
                             .into_iter()
-                            .map_while(Result::ok)
+                            .map_while(std::result::Result::ok)
                             .map(|entry| entry.path())
                             .flat_map(move |path| recurse_path(path, transformers))
-                            .chain(iter::once_with(move || transform_entry(Ok(dir), transformers))),
-                    ),
+                            .chain(
+                                iter::once_with(move || {
+                                    visit(
+                                        Item { inner: Ok(dir), skip_reason: None, visited: true },
+                                        transformers,
+                                    )
+                                })
+                                .flatten(),
+                            ),
+                    ) as FileIterator,
                     Err(err) => Box::new(iter::once(Err(dir.into_err(err.kind().into())))),
-                }
-            },
-            entry => Box::new(iter::once(entry)),
-        }
+                },
+                _ => Box::new(iter::once(result)),
+            }
+        }))
     }
 
     /// Create a [`Walker`] that recurse directories in order to visits entries on the file system.
@@ -2284,15 +2280,22 @@ mod walk {
         }
     }
 
-    /// Apply [`Transformers`] to the given [`fs::Result`].
-    fn transform_entry(entry: fs::Result, transformers: Transformers) -> fs::Result {
-        transformers.iter().fold(entry, |entry, transform| transform(entry))
+    /// Visit the given [`Item`] and return some [`fs::Result`] or  [`None`] if the [`Item`] is
+    /// skipped.
+    fn visit(item: Item, transformers: Transformers) -> Option<fs::Result> {
+        let item = transformers.iter().fold(item, |item, transform| transform(item));
+        if let Some(reason) = &item.skip_reason {
+            trace!("skipped {}: {reason}", item.path().display());
+            None
+        } else {
+            Some(item.inner)
+        }
     }
 
-    /// Tests for the [`transform_entry`] function.
+    /// Tests for the [`visit`] function.
     #[cfg(test)]
-    mod test_transform_entry {
-        use super::{fs, transform_entry, Transformers};
+    mod test_visit {
+        use super::{fs, visit, Item, Transformers};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -2300,7 +2303,9 @@ mod walk {
 
         #[proptest]
         #[allow(clippy::indexing_slicing)]
-        fn transforms(entry: fs::Result, index: TransformersIndex) {
+        fn transforms(item: Item, index: TransformersIndex) {
+            prop_assume!(item.skip_reason.is_none());
+
             let mut transformers: Transformers = [
                 transform_identity,
                 transform_identity,
@@ -2308,26 +2313,72 @@ mod walk {
                 transform_identity,
                 transform_identity,
             ];
-
             transformers[index.0] = transform_fixed;
 
-            prop_assert_eq!(transform_entry(entry.clone(), transformers), transform_fixed(entry));
+            prop_assert_eq!(visit(item.clone(), transformers), Some(transform_fixed(item).inner));
+        }
+
+        #[proptest]
+        #[allow(clippy::indexing_slicing)]
+        fn skips(item: Item, index: TransformersIndex) {
+            let mut transformers: Transformers = [
+                transform_identity,
+                transform_identity,
+                transform_identity,
+                transform_identity,
+                transform_identity,
+            ];
+            transformers[index.0] = transform_skip;
+
+            prop_assert_eq!(visit(item, transformers), None);
         }
 
         /// A [`super::transform::Transformer`] that does not transform the given value.
-        fn transform_identity(entry: fs::Result) -> fs::Result {
-            entry
+        fn transform_identity(item: Item) -> Item {
+            item
         }
 
         /// A [`super::transform::Transformer`] that transforms all values into the same value.
-        fn transform_fixed(_: fs::Result) -> fs::Result {
-            Err(fs::test_helpers::new_file("file").into_err(fs::ErrorKind::Unknown))
+        fn transform_fixed(mut item: Item) -> Item {
+            item.inner = Err(fs::test_helpers::new_file("file").into_err(fs::ErrorKind::Unknown));
+            item
+        }
+
+        /// A [`super::transform::Transformer`] that transforms all values into the skipped item.
+        #[allow(clippy::unnecessary_wraps)]
+        fn transform_skip(item: Item) -> Item {
+            item.into_skipped("some reason")
         }
 
         /// Struct wrapping a [`usize`] that implements [`Arbitrary`] to generate a valid index for
         /// a [`Transformers`] instance.
         #[derive(Arbitrary, Debug)]
         struct TransformersIndex(#[proptest(strategy = "0usize..=4")] usize);
+    }
+
+    /// Helpers for writing unit tests in or using this module.
+    #[cfg(test)]
+    mod test_helpers {
+        use super::{fs, Item};
+
+        impl Item {
+            /// Returns the reason why the [`Item`] should *not* be removed, if any.
+            pub fn skip_reason(&self) -> Option<String> {
+                self.skip_reason.clone()
+            }
+        }
+
+        impl From<fs::Entry> for Item {
+            fn from(entry: fs::Entry) -> Self {
+                Item { inner: Ok(entry), skip_reason: None, visited: false }
+            }
+        }
+
+        impl From<fs::Error> for Item {
+            fn from(err: fs::Error) -> Self {
+                Item { inner: Err(err), skip_reason: None, visited: false }
+            }
+        }
     }
 }
 
@@ -2933,41 +2984,35 @@ mod rm {
     }
 }
 
-/// Transformers for [`fs::Result`]s.
+/// Transformers for [`walk::Item`]s.
 mod transform {
-    use super::fs;
+    use super::{fs, walk};
 
     use std::io;
     use std::path::Path;
 
     use owo_colors::OwoColorize;
 
-    /// A function that may change a [`fs::Result`] into a different-but-related [`fs::Result`].
-    pub type Transformer = fn(fs::Result) -> fs::Result;
+    /// A function that may change a [`walk::Item`] into a different-but-related [`walk::Item`].
+    pub type Transformer = fn(walk::Item) -> walk::Item;
 
     /// Does nothing, returns any value untouched.
-    pub fn identity(entry: fs::Result) -> fs::Result {
-        entry
+    pub fn identity(item: walk::Item) -> walk::Item {
+        item
     }
 
     /// Tests for the [`identity`] function.
     #[cfg(test)]
     mod test_identity {
-        use super::{fs, identity};
+        use super::{identity, walk};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        fn entry(entry: fs::Entry) {
-            let out = identity(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
-        }
-
-        #[proptest]
-        fn error(err: fs::Error) {
-            let out = identity(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
+        fn any_item(item: walk::Item) {
+            let out = identity(item.clone());
+            prop_assert_eq!(out, item);
         }
     }
 
@@ -2976,62 +3021,64 @@ mod transform {
 
     /// Transform all directories into a [`fs::ErrorKind::IsADirectory`] error. Return all other
     /// values untouched.
-    pub fn disallow_all_dirs(entry: fs::Result) -> fs::Result {
-        match entry {
-            Ok(entry) if entry.is_dir() => {
+    pub fn disallow_all_dirs(mut item: walk::Item) -> walk::Item {
+        item.inner = item.inner.and_then(|entry| {
+            if entry.is_dir() {
                 Err(entry.into_err(fs::ErrorKind::IsADirectory).with_tip(TIP_IS_DIR))
-            },
-            _ => entry,
-        }
+            } else {
+                Ok(entry)
+            }
+        });
+
+        item
     }
 
     /// Tests for the [`disallow_all_dirs`] function.
     #[cfg(test)]
     mod test_disallow_all_dirs {
-        use super::{disallow_all_dirs, fs, TIP_IS_DIR};
+        use super::{disallow_all_dirs, fs, walk, TIP_IS_DIR};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        fn entry_non_directory(entry: fs::Entry) {
-            prop_assume!(!entry.is_dir());
+        fn not_a_directory(item: walk::Item) {
+            if let Ok(entry) = item.inner.as_ref() {
+                prop_assume!(!entry.is_dir());
+            }
 
-            let out = disallow_all_dirs(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+            let out = disallow_all_dirs(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[proptest]
-        fn entry_directory(entry: fs::Entry) {
+        fn a_directory(entry: fs::Entry) {
             prop_assume!(entry.is_dir());
 
             let path = entry.path();
 
-            let out = disallow_all_dirs(Ok(entry));
-            prop_assert!(out.is_err());
+            let out = disallow_all_dirs(entry.into());
+            prop_assert!(out.inner.is_err());
 
-            let err = out.expect_err("is_err() should be asserted");
+            let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::IsADirectory);
             prop_assert_eq!(err.path(), path);
             prop_assert_eq!(err.tip(), Some(TIP_IS_DIR));
-        }
-
-        #[proptest]
-        fn error(err: fs::Error) {
-            let out = disallow_all_dirs(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
         }
     }
 
     /// Transform current directory and parent directory into a [`fs::ErrorKind::Refused`] error.
     /// Return all other values untouched.
-    pub fn disallow_current_and_parent_dir(entry: fs::Result) -> fs::Result {
-        match entry {
-            Ok(entry) if is_current_or_parent_dir(entry.path()) => {
+    pub fn disallow_current_and_parent_dir(mut item: walk::Item) -> walk::Item {
+        item.inner = item.inner.and_then(|entry| {
+            if is_current_or_parent_dir(entry.path()) {
                 Err(entry.into_err(fs::ErrorKind::Refused))
-            },
-            _ => entry,
-        }
+            } else {
+                Ok(entry)
+            }
+        });
+
+        item
     }
 
     /// Check if the given [`Path`] is the current directory or parent directory.
@@ -3042,7 +3089,7 @@ mod transform {
     /// Tests for the [`disallow_current_and_parent_dir`] function.
     #[cfg(test)]
     mod test_disallow_current_and_parent_dir {
-        use super::{disallow_current_and_parent_dir, fs};
+        use super::{disallow_current_and_parent_dir, fs, walk};
 
         use std::path::{Path, MAIN_SEPARATOR_STR};
 
@@ -3051,12 +3098,14 @@ mod transform {
         use proptest_derive::Arbitrary;
 
         #[proptest]
-        fn entry_not_current_nor_parent_dir(entry: fs::Entry) {
-            prop_assume!(!entry.path().ends_with("."));
-            prop_assume!(!entry.path().ends_with(".."));
+        fn not_current_nor_parent_dir(item: walk::Item) {
+            if let Ok(entry) = item.inner.as_ref() {
+                prop_assume!(!entry.path().ends_with("."));
+                prop_assume!(!entry.path().ends_with(".."));
+            }
 
-            let out = disallow_current_and_parent_dir(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+            let out = disallow_current_and_parent_dir(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[proptest]
@@ -3064,10 +3113,10 @@ mod transform {
             let path = path.0.replace('/', MAIN_SEPARATOR_STR);
             let entry = fs::test_helpers::new_dir(&path);
 
-            let out = disallow_current_and_parent_dir(Ok(entry));
-            prop_assert!(out.is_err());
+            let out = disallow_current_and_parent_dir(entry.into());
+            prop_assert!(out.inner.is_err());
 
-            let err = out.expect_err("is_err() should be asserted");
+            let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::Refused);
             prop_assert_eq!(err.path(), Path::new(&path));
         }
@@ -3077,18 +3126,12 @@ mod transform {
             let path = path.0.replace('/', MAIN_SEPARATOR_STR);
             let entry = fs::test_helpers::new_dir(&path);
 
-            let out = disallow_current_and_parent_dir(Ok(entry));
-            prop_assert!(out.is_err());
+            let out = disallow_current_and_parent_dir(entry.into());
+            prop_assert!(out.inner.is_err());
 
-            let err = out.expect_err("is_err() should be asserted");
+            let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::Refused);
             prop_assert_eq!(err.path(), Path::new(&path));
-        }
-
-        #[proptest]
-        fn error(err: fs::Error) {
-            let out = disallow_current_and_parent_dir(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
         }
 
         /// Struct wrapping a [`String`] that implements [`Arbitrary`] to generate a current
@@ -3111,13 +3154,16 @@ mod transform {
 
     /// Transform filled directories into a [`fs::ErrorKind::DirectoryNotEmpty`] error. Return all
     /// other values untouched.
-    pub fn disallow_filled_dirs(entry: fs::Result) -> fs::Result {
-        match entry {
-            Ok(entry) if entry.is_dir() && !fs::is_empty(&entry) => {
+    pub fn disallow_filled_dirs(mut item: walk::Item) -> walk::Item {
+        item.inner = item.inner.and_then(|entry| {
+            if entry.is_dir() && !fs::is_empty(&entry) {
                 Err(entry.into_err(fs::ErrorKind::DirectoryNotEmpty).with_tip(TIP_DIR_NOT_EMPTY))
-            },
-            _ => entry,
-        }
+            } else {
+                Ok(entry)
+            }
+        });
+
+        item
     }
 
     /// Tests for the [`disallow_filled_dirs`] function.
@@ -3125,18 +3171,20 @@ mod transform {
     mod test_disallow_filled_dirs {
         use crate::test_helpers::{with_test_dir, TestResult};
 
-        use super::{disallow_filled_dirs, fs, TIP_DIR_NOT_EMPTY};
+        use super::{disallow_filled_dirs, fs, walk, TIP_DIR_NOT_EMPTY};
 
         use assert_fs::prelude::*;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        fn entry_non_dir(entry: fs::Entry) {
-            prop_assume!(!entry.is_dir());
+        fn non_dir(item: walk::Item) {
+            if let Ok(entry) = item.inner.as_ref() {
+                prop_assume!(!entry.is_dir());
+            }
 
-            let out = disallow_filled_dirs(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+            let out = disallow_filled_dirs(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[test]
@@ -3148,8 +3196,8 @@ mod transform {
                 let path = dir.path();
                 let entry = fs::test_helpers::new_dir(path);
 
-                let out = disallow_filled_dirs(Ok(entry.clone()));
-                assert_eq!(out, Ok(entry));
+                let out = disallow_filled_dirs(entry.clone().into());
+                assert_eq!(out, entry.into());
 
                 Ok(())
             })
@@ -3165,10 +3213,10 @@ mod transform {
                 let path = dir.path();
                 let entry = fs::test_helpers::new_dir(path);
 
-                let out = disallow_filled_dirs(Ok(entry));
-                assert!(out.is_err());
+                let out = disallow_filled_dirs(entry.into());
+                assert!(out.inner.is_err());
 
-                let err = out.expect_err("is_err() should be asserted");
+                let err = out.inner.expect_err("is_err() should be asserted");
                 assert_eq!(err.kind(), fs::ErrorKind::DirectoryNotEmpty);
                 assert_eq!(err.path(), path);
                 assert_eq!(err.tip(), Some(TIP_DIR_NOT_EMPTY));
@@ -3176,21 +3224,20 @@ mod transform {
                 Ok(())
             })
         }
-
-        #[proptest]
-        fn error(err: fs::Error) {
-            let out = disallow_filled_dirs(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
-        }
     }
 
     /// Transform root directories into a [`fs::ErrorKind::Refused`] error. Return all other values
     /// untouched.
-    pub fn disallow_root(entry: fs::Result) -> fs::Result {
-        match entry {
-            Ok(entry) if is_root(entry.path()) => Err(entry.into_err(fs::ErrorKind::Refused)),
-            _ => entry,
-        }
+    pub fn disallow_root(mut item: walk::Item) -> walk::Item {
+        item.inner = item.inner.and_then(|entry| {
+            if is_root(entry.path()) {
+                Err(entry.into_err(fs::ErrorKind::Refused))
+            } else {
+                Ok(entry)
+            }
+        });
+
+        item
     }
 
     /// Check if the given [`Path`] is the file system root.
@@ -3201,7 +3248,7 @@ mod transform {
     /// Tests for the [`disallow_root`] function.
     #[cfg(test)]
     mod test_disallow_root {
-        use super::{disallow_root, fs};
+        use super::{disallow_root, fs, walk};
 
         use std::path::Path;
 
@@ -3210,12 +3257,14 @@ mod transform {
 
         #[proptest]
         #[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
-        fn entry_non_root(entry: fs::Entry) {
-            prop_assume!(entry.path() != Path::new("/"));
-            prop_assume!(!entry.path().as_os_str().is_empty());
+        fn non_root(item: walk::Item) {
+            if let Ok(entry) = item.inner.as_ref() {
+                prop_assume!(entry.path() != Path::new("/"));
+                prop_assume!(!entry.path().as_os_str().is_empty());
+            }
 
-            let out = disallow_root(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+            let out = disallow_root(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[test]
@@ -3223,68 +3272,52 @@ mod transform {
             let path = Path::new("/");
             let entry = fs::test_helpers::new_dir(path);
 
-            let out = disallow_root(Ok(entry));
-            assert!(out.is_err());
+            let out = disallow_root(entry.into());
+            assert!(out.inner.is_err());
 
-            let err = out.expect_err("is_err() should be asserted");
+            let err = out.inner.expect_err("is_err() should be asserted");
             assert_eq!(err.kind(), fs::ErrorKind::Refused);
             assert_eq!(err.path(), path);
         }
-
-        #[proptest]
-        fn error(err: fs::Error) {
-            let out = disallow_root(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
-        }
     }
 
-    /// The explanation for why a missing [`fs::Entry`] is skipped.
+    /// The explanation for why a missing [`walk::Item`] is skipped.
     const SKIP_REASON_NOT_FOUND: &str = "Not found";
 
-    /// Transform [`fs::ErrorKind::NotFound`] errors into skipped [`fs::Entry`]s. Return all other
+    /// Transform [`fs::ErrorKind::NotFound`] errors into skipped [`walk::Item`]s. Return all other
     /// values untouched.
-    pub fn skip_not_found(entry: fs::Result) -> fs::Result {
-        match entry {
-            Err(err) if err.kind() == fs::ErrorKind::NotFound => {
-                Ok(err.into_skipped(SKIP_REASON_NOT_FOUND))
-            },
-            _ => entry,
+    pub fn skip_not_found(item: walk::Item) -> walk::Item {
+        if item.inner.as_ref().is_err_and(|err| err.kind() == fs::ErrorKind::NotFound) {
+            item.into_skipped(SKIP_REASON_NOT_FOUND)
+        } else {
+            item
         }
     }
 
     /// Tests for the [`skip_not_found`] function.
     #[cfg(test)]
     mod test_skip_not_found {
-        use super::{fs, skip_not_found};
+        use super::{fs, skip_not_found, walk};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        fn entry(entry: fs::Entry) {
-            let out = skip_not_found(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+        fn found_or_error(item: walk::Item) {
+            if let Err(err) = item.inner.as_ref() {
+                prop_assume!(err.kind() != fs::ErrorKind::NotFound);
+            }
+
+            let out = skip_not_found(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[proptest]
-        fn error_not_found(entry: fs::Entry) {
+        fn not_found(entry: fs::Entry) {
             let err = entry.into_err(fs::ErrorKind::NotFound);
-            let path = err.path();
 
-            let out = skip_not_found(Err(err));
-            prop_assert!(out.is_ok());
-
-            let entry = out.expect("is_ok() should be asserted");
-            prop_assert_eq!(entry.skip_reason(), Some(super::SKIP_REASON_NOT_FOUND.to_owned()));
-            prop_assert_eq!(entry.path(), path);
-        }
-
-        #[proptest]
-        fn error_other_than_not_found(err: fs::Error) {
-            prop_assume!(err.kind() != fs::ErrorKind::NotFound);
-
-            let out = skip_not_found(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
+            let out = skip_not_found(err.into());
+            prop_assert_eq!(out.skip_reason(), Some(super::SKIP_REASON_NOT_FOUND.to_owned()));
         }
     }
 
@@ -3293,78 +3326,83 @@ mod transform {
 
     /// Transform [`fs::ErrorKind::NotFound`] errors into equivalent errors with an associated tip
     /// for how to avoid it. Return all other values untouched.
-    pub fn tip_not_found(entry: fs::Result) -> fs::Result {
-        match entry {
-            Err(err) if err.kind() == fs::ErrorKind::NotFound => Err(err.with_tip(TIP_NOT_FOUND)),
-            _ => entry,
-        }
+    pub fn tip_not_found(mut item: walk::Item) -> walk::Item {
+        item.inner = item.inner.map_err(|err| {
+            if err.kind() == fs::ErrorKind::NotFound {
+                err.with_tip(TIP_NOT_FOUND)
+            } else {
+                err
+            }
+        });
+
+        item
     }
 
     /// Tests for the [`tip_not_found`] function.
     #[cfg(test)]
     mod test_tip_not_found {
-        use super::{fs, tip_not_found, TIP_NOT_FOUND};
+        use super::{fs, tip_not_found, walk, TIP_NOT_FOUND};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        fn entry(entry: fs::Entry) {
-            let out = tip_not_found(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
+        fn found(item: walk::Item) {
+            if let Err(err) = item.inner.as_ref() {
+                prop_assume!(err.kind() != fs::ErrorKind::NotFound);
+            }
+
+            let out = tip_not_found(item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[proptest]
-        fn error_not_found(entry: fs::Entry) {
+        fn not_found(entry: fs::Entry) {
+            let path = entry.path();
             let err = entry.into_err(fs::ErrorKind::NotFound);
-            let path = err.path();
 
-            let out = tip_not_found(Err(err));
-            prop_assert!(out.is_err());
+            let out = tip_not_found(err.into());
+            prop_assert!(out.inner.is_err());
 
-            let err = out.expect_err("is_err() should be asserted");
+            let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::NotFound);
             prop_assert_eq!(err.path(), path);
             prop_assert_eq!(err.tip(), Some(TIP_NOT_FOUND));
         }
-
-        #[proptest]
-        fn error_other_than_not_found(err: fs::Error) {
-            prop_assume!(err.kind() != fs::ErrorKind::NotFound);
-
-            let out = tip_not_found(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
-        }
     }
 
-    /// The explanation for when an [`fs::Entry`] is skipped as a result of the user answering "no".
+    /// The explanation for when an [`walk::Item`] is skipped as a result of the user answering
+    /// "no".
     const SKIP_REASON_ANSWER_NO: &str = "Kept by user";
 
-    /// The explanation for when an [`fs::Entry`] is skipped as a result of unrecognized user input.
+    /// The explanation for when an [`walk::Item`] is skipped as a result of unrecognized user
+    /// input.
     const SKIP_REASON_ANSWER_UNKNOWN: &str = "Unrecognized input";
 
-    /// The explanation for when an [`fs::Entry`] is skipped as a result of an I/O error.
+    /// The explanation for when an [`walk::Item`] is skipped as a result of an I/O error.
     const SKIP_REASON_IO_ERROR: &str = "I/O error";
 
-    /// Transform (not skipped) [`fs::Entry`]s based on user input. Return all other values
+    /// Transform (not skipped) [`walk::Item`]s based on user input. Return all other values
     /// untouched.
-    pub fn interactive(entry: fs::Result) -> fs::Result {
-        match entry {
-            Ok(entry) if !entry.is_skipped() => Ok(interact_transform(
-                prompt(&new_prompt_for(&entry), &mut io::stdin().lock(), &mut anstream::stderr()),
-                entry,
-            )),
-            _ => entry,
+    pub fn interactive(item: walk::Item) -> walk::Item {
+        if let Ok(entry) = item.inner.as_ref() {
+            let prompt_text = new_prompt_for(entry, item.is_visited());
+            interact_transform(
+                prompt(&prompt_text, &mut io::stdin().lock(), &mut anstream::stderr()),
+                item,
+            )
+        } else {
+            item
         }
     }
 
-    /// Create a user prompt for what to do with the given [`fs::Entry`].
-    fn new_prompt_for(entry: &fs::Entry) -> String {
+    /// Create a user prompt for what to do with the given [`walk::Item`].
+    fn new_prompt_for(entry: &fs::Entry, visited: bool) -> String {
         let question = match entry.kind() {
             fs::EntryKind::Dir => {
                 if fs::is_empty(entry) {
                     "Remove empty directory"
-                } else if entry.is_visited() {
+                } else if visited {
                     "Remove directory"
                 } else {
                     "Descend into directory"
@@ -3402,16 +3440,16 @@ mod transform {
         Ok(answer.trim().to_owned())
     }
 
-    /// Transform the given [`fs::Entry`] based on the given user response.
-    fn interact_transform(response: io::Result<String>, entry: fs::Entry) -> fs::Entry {
+    /// Transform the given [`walk::Item`] based on the given user response.
+    fn interact_transform(response: io::Result<String>, item: walk::Item) -> walk::Item {
         if let Ok(answer) = response {
             match answer.to_lowercase().as_str() {
-                "y" | "yes" => entry.into_visited(),
-                "n" | "no" => entry.into_skipped(SKIP_REASON_ANSWER_NO),
-                _ => entry.into_skipped(SKIP_REASON_ANSWER_UNKNOWN),
+                "y" | "yes" => item,
+                "n" | "no" => item.into_skipped(SKIP_REASON_ANSWER_NO),
+                _ => item.into_skipped(SKIP_REASON_ANSWER_UNKNOWN),
             }
         } else {
-            entry.into_skipped(SKIP_REASON_IO_ERROR)
+            item.into_skipped(SKIP_REASON_IO_ERROR)
         }
     }
 
@@ -3420,7 +3458,7 @@ mod transform {
     mod test_interactive {
         use crate::test_helpers::{with_test_dir, TestResult};
 
-        use super::{fs, interact_transform, interactive, new_prompt_for, prompt};
+        use super::{fs, interact_transform, new_prompt_for, prompt, walk};
 
         use std::io;
 
@@ -3429,38 +3467,6 @@ mod transform {
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
         use proptest_derive::Arbitrary;
-
-        #[proptest]
-        fn interact_with_skipped(entry: fs::Entry, reason: String) {
-            prop_assume!(!entry.is_visited());
-
-            let entry = entry.into_skipped(&reason);
-
-            let out = interactive(Ok(entry.clone()));
-            prop_assert_eq!(out, Ok(entry));
-        }
-
-        #[proptest]
-        fn interact_with_error(err: fs::Error) {
-            let out = interactive(Err(err.clone()));
-            prop_assert_eq!(out, Err(err));
-        }
-
-        #[test]
-        fn new_prompt_for_file_empty() -> TestResult {
-            with_test_dir(|test_dir| {
-                let file = test_dir.child("file");
-                file.touch()?;
-
-                let path = file.path();
-                let entry = fs::test_helpers::new_file(path);
-
-                let out = new_prompt_for(&entry);
-                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display().bold()));
-
-                Ok(())
-            })
-        }
 
         #[test]
         fn new_prompt_for_file_filled() -> TestResult {
@@ -3471,7 +3477,10 @@ mod transform {
                 let path = file.path();
                 let entry = fs::test_helpers::new_file(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
+                assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display().bold()));
+
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(out, format!("Remove regular file {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
@@ -3487,7 +3496,7 @@ mod transform {
                 let path = dir.path();
                 let entry = fs::test_helpers::new_dir(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
                 assert_eq!(
                     out,
                     format!("Remove empty directory {}? [Y/n] ", path.display().bold())
@@ -3504,9 +3513,9 @@ mod transform {
                 dir.create_dir_all()?;
 
                 let path = dir.path();
-                let entry = fs::test_helpers::new_dir(path).into_visited();
+                let entry = fs::test_helpers::new_dir(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(
                     out,
                     format!("Remove empty directory {}? [Y/n] ", path.display().bold())
@@ -3526,7 +3535,7 @@ mod transform {
                 let path = dir.path();
                 let entry = fs::test_helpers::new_dir(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
                 assert_eq!(
                     out,
                     format!("Descend into directory {}? [Y/n] ", path.display().bold())
@@ -3544,9 +3553,9 @@ mod transform {
                 dir.child("file").touch()?;
 
                 let path = dir.path();
-                let entry = fs::test_helpers::new_dir(path).into_visited();
+                let entry = fs::test_helpers::new_dir(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(out, format!("Remove directory {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
@@ -3564,7 +3573,10 @@ mod transform {
                 let path = link.path();
                 let entry = fs::test_helpers::new_symlink(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
+
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
@@ -3582,7 +3594,10 @@ mod transform {
                 let path = link.path();
                 let entry = fs::test_helpers::new_symlink(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
+
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
@@ -3601,7 +3616,10 @@ mod transform {
                 let path = link.path();
                 let entry = fs::test_helpers::new_symlink(path);
 
-                let out = new_prompt_for(&entry);
+                let out = new_prompt_for(&entry, false);
+                assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
+
+                let out = new_prompt_for(&entry, true);
                 assert_eq!(out, format!("Remove symbolic link {}? [Y/n] ", path.display().bold()));
 
                 Ok(())
@@ -3651,29 +3669,29 @@ mod transform {
         }
 
         #[proptest]
-        fn transform_answer_yes(entry: fs::Entry, answer: AnswerYes) {
-            let out = interact_transform(Ok(answer.0), entry.clone());
-            prop_assert_eq!(out, entry.into_visited());
+        fn transform_answer_yes(item: walk::Item, answer: AnswerYes) {
+            let out = interact_transform(Ok(answer.0), item.clone());
+            prop_assert_eq!(out, item);
         }
 
         #[proptest]
-        fn transform_answer_no(entry: fs::Entry, answer: AnswerNo) {
-            let out = interact_transform(Ok(answer.0), entry.clone());
-            prop_assert_eq!(out, entry.into_skipped(super::SKIP_REASON_ANSWER_NO));
+        fn transform_answer_no(item: walk::Item, answer: AnswerNo) {
+            let out = interact_transform(Ok(answer.0), item.clone());
+            prop_assert_eq!(out, item.into_skipped(super::SKIP_REASON_ANSWER_NO));
         }
 
         #[proptest]
-        fn transform_answer_nonsense(entry: fs::Entry, answer: String) {
+        fn transform_answer_nonsense(item: walk::Item, answer: String) {
             prop_assume!(!matches!(answer.to_lowercase().as_ref(), "y" | "yes" | "n" | "no"));
 
-            let out = interact_transform(Ok(answer), entry.clone());
-            prop_assert_eq!(out, entry.into_skipped(super::SKIP_REASON_ANSWER_UNKNOWN));
+            let out = interact_transform(Ok(answer), item.clone());
+            prop_assert_eq!(out, item.into_skipped(super::SKIP_REASON_ANSWER_UNKNOWN));
         }
 
         #[proptest]
-        fn transform_io_error(entry: fs::Entry, err: std::io::Error) {
-            let out = interact_transform(Err(err), entry.clone());
-            prop_assert_eq!(out, entry.into_skipped(super::SKIP_REASON_IO_ERROR));
+        fn transform_io_error(item: walk::Item, err: std::io::Error) {
+            let out = interact_transform(Err(err), item.clone());
+            prop_assert_eq!(out, item.into_skipped(super::SKIP_REASON_IO_ERROR));
         }
 
         /// Struct wrapping a [`String`] that implements [`Arbitrary`] to generate a "no" answer
