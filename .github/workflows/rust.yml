@@ -129,7 +129,7 @@ jobs:
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: coverage-report
-          path: _reports/coverage-all.html
+          path: _reports/coverage/
   docs:
     name: Docs
     runs-on: ubuntu-22.04
@@ -176,6 +176,40 @@ jobs:
           tool: just@1
       - name: Check formatting
         run: just ci-fmt
+  mutation:
+    name: Mutation
+    runs-on: ubuntu-22.04
+    needs:
+      - test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # v3.5.1
+      - name: Cache Rust & Cargo
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@1d74f337f279f52e54c352ebe5b96eaa36c948d3 # v2.9.0
+        with:
+          tool: just@1
+      - name: Install cargo-mutants
+        uses: taiki-e/install-action@1d74f337f279f52e54c352ebe5b96eaa36c948d3 # v2.9.0
+        with:
+          tool: cargo-mutants@23.5.0
+      - name: Run mutation tests
+        run: just ci-mutation
+      - name: Upload mutation report
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          name: mutation-report
+          path: _reports/mutants.out/
   test:
     name: Test (${{ matrix.name }})
     runs-on: ${{ matrix.os }}

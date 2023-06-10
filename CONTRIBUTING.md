@@ -23,6 +23,7 @@ this document.
     - [Test Organization](#test-organization)
     - [Types of Tests](#types-of-tests)
     - [Test Coverage](#test-coverage)
+    - [Mutation Testing](#mutation-testing)
     - [Special Tests](#special-tests)
   - [Documenting](#documenting)
   - [Vetting](#vetting)
@@ -107,6 +108,7 @@ To be able to contribute you need the following tooling:
 - [Rust] and [Cargo] v1.70 (edition 2021) with [Clippy], [rustfmt] (see `rust-toolchain.toml`);
 - (Optional) [cargo-all-features] v1.7.0 or later;
 - (Optional) [cargo-deny] v0.13.0 or later;
+- (Optional) [cargo-mutants] v23.0.0 or later;
 - (Optional) [cargo-tarpaulin] v0.25.0 or later;
 - (Suggested) a code editor with [EditorConfig] support;
 
@@ -119,6 +121,7 @@ To be able to contribute you need the following tooling:
 [rustfmt]: https://rust-lang.github.io/rustfmt/
 [cargo-all-features]: https://github.com/frewsxcv/cargo-all-features
 [cargo-deny]: https://github.com/EmbarkStudios/cargo-deny
+[cargo-mutants]: https://github.com/sourcefrog/cargo-mutants
 [cargo-tarpaulin]: https://github.com/xd009642/tarpaulin
 
 ### Workflow
@@ -281,13 +284,40 @@ commands:
 just coverage
 ```
 
-This will generate a coverage report in HTML format that can be found in the `_reports/` directory.
+This will generate a coverage report that can be found in the `_reports/coverage/` directory.
 
 If necessary you can configure the feature set to test using the `features` variable to adjust the
 build, for example:
 
 ```shell
 just features=classic coverage
+```
+
+#### Mutation Testing
+
+Mutation testing can be used as a guide to improve the test suite - if a mutation in the source code
+isn't detected by any test it indicates a gap in the suite. To aid in writing tests this project is
+set up with mutation testing powered by [cargo-mutants]. To generate a mutation report use the
+command:
+
+```shell
+just mutation
+```
+
+This will generate a mutation report in that can be found in the `_reports/mutants.out/` directory.
+
+You can configure the feature set to test using the `features` variable. This can be used to speed
+up mutation testing if you're only interested in a particular piece of functionality. For example:
+
+```shell
+just features=classic mutation
+```
+
+You may need to use the `test_features` variable to catch all mutants since some functionality has
+no or limited coverage without these. For example:
+
+```shell
+just test_features=test-trash mutation
 ```
 
 #### Special Tests
