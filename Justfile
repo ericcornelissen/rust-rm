@@ -50,7 +50,7 @@ alias v := vet
 		{{COVERAGE_ARGS}} \
 		{{TEST_FEATURES}} \
 		{{FEATURES}}
-	mv _reports/tarpaulin-report.html _reports/coverage-all.html
+	mv _reports/coverage/tarpaulin-report.html _reports/coverage/coverage-all.html
 
 # Produce a coverage report for integration tests
 @coverage-integration:
@@ -59,7 +59,7 @@ alias v := vet
 		{{TEST_INTEGRATION_ARGS}} \
 		{{TEST_FEATURES}} \
 		{{FEATURES}}
-	mv _reports/tarpaulin-report.html _reports/coverage-integration.html
+	mv _reports/coverage/tarpaulin-report.html _reports/coverage/coverage-integration.html
 
 # Produce a coverage report for unit tests
 @coverage-unit:
@@ -68,7 +68,7 @@ alias v := vet
 		{{TEST_UNIT_ARGS}} \
 		{{TEST_FEATURES}} \
 		{{FEATURES}}
-	mv _reports/tarpaulin-report.html _reports/coverage-unit.html
+	mv _reports/coverage/tarpaulin-report.html _reports/coverage/coverage-unit.html
 
 # Generate documentation for the project and dependencies
 @docs:
@@ -98,6 +98,16 @@ alias v := vet
 		-e '/^ *#!\[deny/d' \
 	> loc.rs
 	wc -l loc.rs
+
+# Run mutation tests
+@mutation:
+	cargo mutants \
+		--output _reports/ \
+		--exclude-re cli::run \
+		--exclude-re logging \
+		-- \
+		{{TEST_UNIT_ARGS}} \
+		{{TEST_FEATURES}}
 
 # Profile with visualization using <https://github.com/brendangregg/FlameGraph>
 [private]
@@ -222,6 +232,12 @@ _profile_prepare:
 	just ci={{TRUE}} fmt-check
 
 [private]
+@ci-mutation:
+	just ci={{TRUE}} \
+		test_features=test-dangerous \
+		mutation
+
+[private]
 @ci-test:
 	just ci={{TRUE}} \
 		test_features=test-dangerous,test-trash \
@@ -239,7 +255,7 @@ FALSE := "0"
 ci := FALSE
 
 STD_BUILD_ARGS := "--release"
-STD_COVERAGE_ARGS :=  "--count --line --engine llvm --out html --output-dir _reports"
+STD_COVERAGE_ARGS :=  "--count --line --engine llvm --out html --output-dir _reports/coverage/"
 STD_DOCS_ARGS := "--document-private-items"
 STD_TEST_ARGS := ""
 
