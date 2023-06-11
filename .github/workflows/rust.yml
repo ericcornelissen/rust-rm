@@ -127,9 +127,11 @@ jobs:
         run: just ci-coverage
       - name: Upload coverage report
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        if: ${{ failure() || success() }}
         with:
           name: coverage-report
           path: _reports/coverage/
+          retention-days: 7
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
         with:
@@ -211,9 +213,11 @@ jobs:
         run: just ci-mutation
       - name: Upload mutation report
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        if: ${{ failure() || success() }}
         with:
           name: mutation-report
           path: _reports/mutants.out/
+          retention-days: 7
   test:
     name: Test (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
