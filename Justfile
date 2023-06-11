@@ -33,11 +33,15 @@ alias v := vet
 @_clean_git:
 	git clean -fx \
 		_reports/ \
+		mutants.out*/ \
 		profile_fs/ \
+		cobertura* \
+		lcov* \
 		loc.rs \
 		perf.data \
 		perf.data.old \
-		perf.svg
+		perf.svg \
+		tarpaulin*
 
 # Check license compliance
 @compliance:

@@ -9,6 +9,9 @@ desktop.ini
 .idea/
 .vscode/
 
+## Mutation testing
+/mutants.out*/
+
 ## Profiling
 /profile_fs/
 /flamegraph.pl
@@ -22,3 +25,8 @@ desktop.ini
 /target/
 *.profraw
 **/*.rs.bk
+
+## Test coverage
+cobertura*
+lcov*
+tarpaulin*
