@@ -105,6 +105,7 @@ alias v := vet
 		--output _reports/ \
 		--exclude-re cli::run \
 		--exclude-re logging \
+		--exclude-re 'impl Display' \
 		-- \
 		{{TEST_UNIT_ARGS}} \
 		{{TEST_FEATURES}}
@@ -234,7 +235,7 @@ _profile_prepare:
 [private]
 @ci-mutation:
 	just ci={{TRUE}} \
-		test_features=test-dangerous \
+		test_features=test-dangerous,test-trash \
 		mutation
 
 [private]

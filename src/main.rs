@@ -2401,6 +2401,10 @@ mod rm {
     pub fn dispose(entry: fs::Entry) -> Result {
         trace!("dispose of {entry}");
 
+        if entry.path().to_str().is_some_and(str::is_empty) {
+            return Err(entry.into_err(fs::ErrorKind::Refused));
+        }
+
         match trash::delete(entry.path()) {
             Ok(()) => Ok(format!("Moved {} to trash", entry.bold())),
             Err(err) => Err(entry.into_err(err.into())),
@@ -2648,6 +2652,27 @@ mod rm {
 
                 dir.assert(predicate::path::exists());
                 link.assert(predicate::path::missing());
+
+                Ok(())
+            })
+        }
+
+        #[test]
+        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        fn empty_path() -> TestResult {
+            with_test_dir(|test_dir| {
+                let file = test_dir.child("file");
+                file.touch()?;
+
+                let entry = fs::test_helpers::new_file("");
+
+                let out = dispose(entry);
+                assert!(out.is_err());
+
+                let err = out.expect_err("is_err() should be asserted");
+                assert_eq!(err.kind(), fs::ErrorKind::Refused);
+
+                file.assert(predicate::path::exists());
 
                 Ok(())
             })
