@@ -3095,7 +3095,6 @@ mod transform {
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
-        use proptest_derive::Arbitrary;
 
         #[proptest]
         fn not_current_nor_parent_dir(item: walk::Item) {
@@ -3110,43 +3109,60 @@ mod transform {
 
         #[proptest]
         fn entry_current_directory(path: CurrentDirPath) {
-            let path = path.0.replace('/', MAIN_SEPARATOR_STR);
-            let entry = fs::test_helpers::new_dir(&path);
+            let entry = fs::test_helpers::new_dir(&path.0);
 
             let out = disallow_current_and_parent_dir(entry.into());
             prop_assert!(out.inner.is_err());
 
             let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::Refused);
-            prop_assert_eq!(err.path(), Path::new(&path));
+            prop_assert_eq!(err.path(), Path::new(&path.0));
         }
 
         #[proptest]
         fn entry_parent_directory(path: ParentDirPath) {
-            let path = path.0.replace('/', MAIN_SEPARATOR_STR);
-            let entry = fs::test_helpers::new_dir(&path);
+            let entry = fs::test_helpers::new_dir(&path.0);
 
             let out = disallow_current_and_parent_dir(entry.into());
             prop_assert!(out.inner.is_err());
 
             let err = out.inner.expect_err("is_err() should be asserted");
             prop_assert_eq!(err.kind(), fs::ErrorKind::Refused);
-            prop_assert_eq!(err.path(), Path::new(&path));
+            prop_assert_eq!(err.path(), Path::new(&path.0));
         }
 
         /// Struct wrapping a [`String`] that implements [`Arbitrary`] to generate a current
         /// directory path.
-        ///
-        /// Note: the generated path will always use Unix path separators.
-        #[derive(Arbitrary, Debug)]
-        struct CurrentDirPath(#[proptest(regex = "(\\.\\.?/)*\\.")] String);
+        #[derive(Debug)]
+        struct CurrentDirPath(String);
+
+        impl Arbitrary for CurrentDirPath {
+            type Parameters = ();
+            type Strategy = BoxedStrategy<Self>;
+
+            fn arbitrary_with(_: ()) -> Self::Strategy {
+                "(\\.\\.?SEPARATOR)*\\."
+                    .prop_map(|v| CurrentDirPath(v.replace("SEPARATOR", MAIN_SEPARATOR_STR)))
+                    .boxed()
+            }
+        }
 
         /// Struct wrapping a [`String`] that implements [`Arbitrary`] to generate a parent
         /// directory path.
-        ///
-        /// Note: the generated path will always use Unix path separators.
-        #[derive(Arbitrary, Debug)]
-        struct ParentDirPath(#[proptest(regex = "(\\.\\.?/)*\\.\\.")] String);
+        #[derive(Debug)]
+
+        struct ParentDirPath(String);
+
+        impl Arbitrary for ParentDirPath {
+            type Parameters = ();
+            type Strategy = BoxedStrategy<Self>;
+
+            fn arbitrary_with(_: ()) -> Self::Strategy {
+                "(\\.\\.?SEPARATOR)*\\.\\."
+                    .prop_map(|v| ParentDirPath(v.replace("SEPARATOR", MAIN_SEPARATOR_STR)))
+                    .boxed()
+            }
+        }
     }
 
     /// The tip for avoiding [`fs::ErrorKind::DirectoryNotEmpty`] errors.
