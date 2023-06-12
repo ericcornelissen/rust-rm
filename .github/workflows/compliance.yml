@@ -13,6 +13,9 @@ on:
 
 permissions: read-all
 
+env:
+  RUST_BACKTRACE: 1
+
 jobs:
   license:
     name: License

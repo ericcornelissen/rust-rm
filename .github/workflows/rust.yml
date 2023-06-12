@@ -16,6 +16,9 @@ on:
 
 permissions: read-all
 
+env:
+  RUST_BACKTRACE: 1
+
 jobs:
   build:
     name: Build (${{ matrix.name }})
