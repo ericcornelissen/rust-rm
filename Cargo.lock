@@ -916,9 +916,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "trash"
-version = "3.0.2"
+version = "3.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b782240476bca40f750a7f205510ac1449ab707d3ac3f451c4b356f557c0ecd"
+checksum = "1d219a2989f6a23fd3a6599d733e03b524cc3c50feed539ea3a136ae7845fe83"
 dependencies = [
  "chrono",
  "libc",
