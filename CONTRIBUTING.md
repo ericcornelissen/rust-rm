@@ -164,7 +164,7 @@ If your changes relate to a compile-time feature you can use the `features` vari
 build, for example:
 
 ```shell
-just features=classic build
+just features=gnu-mode build
 ```
 
 For greater certainty that your changes are valid you can also use the build command used in
@@ -198,7 +198,7 @@ If necessary you can configure the feature set to test with using the `features`
 the build, for example:
 
 ```shell
-just features=classic test
+just features=gnu-mode test
 ```
 
 For greater certainty that your changes are valid you can also use the test command used in
@@ -290,7 +290,7 @@ If necessary you can configure the feature set to test using the `features` vari
 build, for example:
 
 ```shell
-just features=classic coverage
+just features=gnu-mode coverage
 ```
 
 #### Mutation Testing
@@ -310,7 +310,7 @@ You can configure the feature set to test using the `features` variable. This ca
 up mutation testing if you're only interested in a particular piece of functionality. For example:
 
 ```shell
-just features=classic mutation
+just features=gnu-mode mutation
 ```
 
 You may need to use the `test_features` variable to catch all mutants since some functionality has
@@ -446,7 +446,7 @@ Add the following options to the `.vscode/settings.json` file for this project:
   // working on code related to one of these features.
   "rust-analyzer.cargo.noDefaultFeatures": true,
   "rust-analyzer.cargo.features": [
-    "classic",
+    "gnu-mode",
     "trash",
   ],
 }

@@ -10,11 +10,11 @@ categories = ["development-tools", "filesystem"]
 edition = "2021"
 
 [features]
-default = ["classic", "trash"]
+default = ["gnu-mode", "trash"]
 
 ## Build features
-# Include support for the RUST_RM_CLASSIC environment variable
-classic = []
+# Include support for the RUST_RM_GNU_MODE environment variable
+gnu-mode = []
 # Include support for the --trash CLI option
 trash = ["dep:trash"]
 
