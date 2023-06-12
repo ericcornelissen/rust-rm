@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! Test suite focussed on testing the functionality of classic mode.
+//! Test suite focussed on testing the functionality of GNU mode.
 
 pub mod common;
 
@@ -10,7 +10,7 @@ use assert_fs::prelude::*;
 use predicates::prelude::*;
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_file() -> TestResult {
     let filename = "file";
 
@@ -26,7 +26,7 @@ fn remove_file() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_empty_dir() -> TestResult {
     let dirname = "dir";
 
@@ -45,7 +45,7 @@ fn remove_empty_dir() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_empty_dir_recursively() -> TestResult {
     let dirname = "dir";
 
@@ -64,7 +64,7 @@ fn remove_empty_dir_recursively() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_filled_dir_recursively() -> TestResult {
     let dirname = "dir";
 
@@ -86,7 +86,7 @@ fn remove_filled_dir_recursively() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_symlink() -> TestResult {
     let linkname = "link";
 
@@ -105,7 +105,7 @@ fn remove_symlink() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_missing() -> TestResult {
     let filename = "file";
 
@@ -117,7 +117,7 @@ fn remove_missing() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn remove_missing_with_force() -> TestResult {
     with_test_dir(|mut cmd, _test_dir| {
         cmd.args(["--force", "file"]).assert().success();
@@ -127,7 +127,7 @@ fn remove_missing_with_force() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn stdout_and_stderr_on_success() -> TestResult {
     let filename = "file";
 
@@ -142,7 +142,7 @@ fn stdout_and_stderr_on_success() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn interactive_no() -> TestResult {
     let filename = "file";
 
@@ -163,7 +163,7 @@ fn interactive_no() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn interactive_yes() -> TestResult {
     let filename = "file";
 
@@ -184,7 +184,7 @@ fn interactive_yes() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn invalid_flag_blind() -> TestResult {
     unsupported_flag("--blind")?;
     unsupported_flag_with_force("--blind")?;
@@ -193,7 +193,7 @@ fn invalid_flag_blind() -> TestResult {
 }
 
 #[test]
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn invalid_flag_quiet() -> TestResult {
     unsupported_flag("--quiet")?;
     unsupported_flag_with_force("--quiet")?;
@@ -202,7 +202,7 @@ fn invalid_flag_quiet() -> TestResult {
 }
 
 #[test]
-#[cfg(all(feature = "classic", feature = "trash"))]
+#[cfg(all(feature = "gnu-mode", feature = "trash"))]
 fn invalid_flag_trash() -> TestResult {
     unsupported_flag("--trash")?;
     unsupported_flag_with_force("--trash")?;
@@ -211,8 +211,8 @@ fn invalid_flag_trash() -> TestResult {
 }
 
 #[test]
-#[cfg(not(feature = "classic"))]
-fn classic_mode_ignored_without_the_build_feature() -> TestResult {
+#[cfg(not(feature = "gnu-mode"))]
+fn ignored_without_the_build_feature() -> TestResult {
     let filename = "file";
 
     with_test_dir(|mut cmd, test_dir| {
@@ -229,34 +229,34 @@ fn classic_mode_ignored_without_the_build_feature() -> TestResult {
     })
 }
 
-/// Test the behavior of using an unsupported flag in classic mode (without `--force`).
+/// Test the behavior of using an unsupported flag in GNU mode (without `--force`).
 ///
 /// # Example
 ///
 /// ```no_run
 /// unsupported_flag("--flag");
 /// ```
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn unsupported_flag(flag: &str) -> TestResult {
     with_test_dir(|mut cmd, _test_dir| {
         cmd.arg(flag)
             .assert()
             .failure()
             .stdout("")
-            .stderr(format!("error: option {flag} not supported in classic mode\n"));
+            .stderr(format!("error: option {flag} not supported in GNU mode\n"));
 
         Ok(())
     })
 }
 
-/// Test the behavior of using an unsupported flag in classic mode with `--force`.
+/// Test the behavior of using an unsupported flag in GNU mode with `--force`.
 ///
 /// # Example
 ///
 /// ```no_run
 /// unsupported_flag_with_force("--flag");
 /// ```
-#[cfg(feature = "classic")]
+#[cfg(feature = "gnu-mode")]
 fn unsupported_flag_with_force(flag: &str) -> TestResult {
     with_test_dir(|mut cmd, _test_dir| {
         cmd.args(["--force", flag]).assert().success();
@@ -265,7 +265,7 @@ fn unsupported_flag_with_force(flag: &str) -> TestResult {
     })
 }
 
-/// Run a test with classic mode enabled.
+/// Run a test with GNU mode enabled.
 ///
 /// See also [`common::with_test_dir`].
 fn with_test_dir<C>(callback: C) -> TestResult
@@ -273,7 +273,7 @@ where
     C: FnOnce(assert_cmd::Command, &assert_fs::TempDir) -> TestResult,
 {
     common::with_test_dir(|mut cmd, test_dir| {
-        cmd.env("RUST_RM_CLASSIC", "1");
+        cmd.env("RUST_RM_GNU_MODE", "1");
         callback(cmd, test_dir)
     })
 }

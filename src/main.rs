@@ -7,8 +7,8 @@
 #![deny(rustdoc::invalid_html_tags)]
 #![deny(rustdoc::bare_urls)]
 
-//! A CLI like the `rm(1)` Unix command but more modern and designed for humans. Aims to provide an
-//! `rm` command that feels familiar yet is safer and more user friendly.
+//! A CLI like the GNU version of `rm(1)` but more modern and designed for humans. Aims to provide
+//! an `rm` command that feels familiar yet is safer and more user friendly.
 
 use std::process::ExitCode;
 
@@ -130,9 +130,9 @@ mod cli {
     {
         let mut args = Args::try_parse_from(args)?;
 
-        #[cfg(feature = "classic")]
-        if vars.classic {
-            args = parse_args_classic(args)?;
+        #[cfg(feature = "gnu-mode")]
+        if vars.gnu_mode {
+            args = parse_args_gnu_mode(args)?;
         }
 
         if vars.debug {
@@ -173,7 +173,7 @@ mod cli {
         #[proptest]
         fn blind_long_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("--blind"), vars) {
                 Ok(args) => prop_assert!(args.blind),
@@ -184,7 +184,7 @@ mod cli {
         #[proptest]
         fn blind_short_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("-b"), vars) {
                 Ok(args) => prop_assert!(args.blind),
@@ -196,7 +196,7 @@ mod cli {
         fn not_blind(args: TestArgs, vars: Vars) {
             prop_assume!(!args.contains("--blind"));
             prop_assume!(!args.contains("-b"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.blind),
@@ -238,7 +238,7 @@ mod cli {
         #[proptest]
         fn force_long_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("--force"), vars) {
                 Ok(args) => prop_assert!(args.force),
@@ -249,7 +249,7 @@ mod cli {
         #[proptest]
         fn force_short_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("-f"), vars) {
                 Ok(args) => prop_assert!(args.force),
@@ -261,7 +261,7 @@ mod cli {
         fn not_force(args: TestArgs, vars: Vars) {
             prop_assume!(!args.contains("--force"));
             prop_assume!(!args.contains("-f"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.force),
@@ -323,7 +323,7 @@ mod cli {
         #[proptest]
         fn quiet_long_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("--quiet"), vars) {
                 Ok(args) => prop_assert!(args.quiet),
@@ -334,7 +334,7 @@ mod cli {
         #[proptest]
         fn quiet_short_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("-q"), vars) {
                 Ok(args) => prop_assert!(args.quiet),
@@ -346,7 +346,7 @@ mod cli {
         fn not_quiet(args: TestArgs, vars: Vars) {
             prop_assume!(!args.contains("--quiet"));
             prop_assume!(!args.contains("-q"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.quiet),
@@ -389,7 +389,7 @@ mod cli {
         #[cfg(feature = "trash")]
         fn trash_long_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("--trash"), vars) {
                 Ok(args) => prop_assert!(args.trash),
@@ -401,7 +401,7 @@ mod cli {
         #[cfg(feature = "trash")]
         fn trash_short_name(args: TestArgsAndIndex, vars: Vars) {
             prop_assume!(!args.has_arg_before_index("--"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.insert("-t"), vars) {
                 Ok(args) => prop_assert!(args.trash),
@@ -414,7 +414,7 @@ mod cli {
         fn not_trash(args: TestArgs, vars: Vars) {
             prop_assume!(!args.contains("--trash"));
             prop_assume!(!args.contains("-t"));
-            prop_assume!(!vars.is_classic());
+            prop_assume!(!vars.gnu_mode());
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.trash),
@@ -507,7 +507,7 @@ mod cli {
         /// ```no_run
         /// use cli::Vars;
         ///
-        /// let vars = Vars { classic: false, debug: false };
+        /// let vars = Vars { debug: false, gnu_mode: false };
         /// test_combination_errors(("long-a", 'a'), ("long-b", 'b'), vars)?;
         /// ```
         fn test_combination_errors(flag1: FlagPair, flag2: FlagPair, vars: Vars) -> Result<(), ()> {
@@ -535,13 +535,13 @@ mod cli {
         }
     }
 
-    /// Parse arguments for the CLI with classic mode enabled, modifying the given `args` in place.
+    /// Parse arguments for the CLI with GNU mode enabled, modifying the given `args` in place.
     ///
     /// # Errors
     ///
     /// If an unsupported flags is used, but only if the `force` option isn't set.
-    #[cfg(feature = "classic")]
-    fn parse_args_classic(mut args: Args) -> ParseResult {
+    #[cfg(feature = "gnu-mode")]
+    fn parse_args_gnu_mode(mut args: Args) -> ParseResult {
         use clap::error::ErrorKind;
 
         macro_rules! check_use_of_invalid_flag {
@@ -549,7 +549,7 @@ mod cli {
                 if args.$flag {
                     return Err(Error::raw(
                         ErrorKind::UnknownArgument,
-                        format!("option --{} not supported in classic mode\n", stringify!($flag)),
+                        format!("option --{} not supported in GNU mode\n", stringify!($flag)),
                     ));
                 }
             };
@@ -573,10 +573,10 @@ mod cli {
         Ok(args)
     }
 
-    /// Tests for the [`parse_args_classic`] function.
+    /// Tests for the [`parse_args_gnu_mode`] function.
     #[cfg(test)]
-    #[cfg(feature = "classic")]
-    mod test_parse_args_classic {
+    #[cfg(feature = "gnu-mode")]
+    mod test_parse_args_gnu_mode {
         use super::test_helpers::{TestArgs, TestArgsAndIndex};
 
         use super::Vars;
@@ -751,17 +751,17 @@ mod cli {
         }
 
         /// Convenience wrapper to parse arguments using [`super::parse_args`]. Always sets
-        /// `vars.classic` to `true`.
+        /// `vars.gnu_mode` to `true`.
         ///
         /// See also [`super::test_helpers::parse_args`].
         fn parse_args(args: Vec<String>, vars: Vars) -> super::test_helpers::ParseResult {
-            super::test_helpers::parse_args(args, Vars { classic: true, ..vars })
+            super::test_helpers::parse_args(args, Vars { gnu_mode: true, ..vars })
         }
     }
 
-    /// The environment variable name to enable compatibility mode with the `rm(1)` Unix command.
-    #[cfg(feature = "classic")]
-    const CLASSIC_MODE: &str = "RUST_RM_CLASSIC";
+    /// The environment variable name to enable compatibility mode with the GNU version of `rm(1)`.
+    #[cfg(feature = "gnu-mode")]
+    const GNU_MODE: &str = "RUST_RM_GNU_MODE";
 
     /// A standard environment variable name to enable verbose mode.
     const DEBUG_MODE: &str = "DEBUG";
@@ -769,12 +769,12 @@ mod cli {
     /// Struct representing parsed environment configuration values.
     #[cfg_attr(test, derive(Arbitrary, Clone, Copy, Debug))]
     pub struct Vars {
-        /// The environment configuration value for classic mode.
-        #[cfg(feature = "classic")]
-        classic: bool,
-
         /// The environment configuration value for debug mode.
         debug: bool,
+
+        /// The environment configuration value for GNU mode.
+        #[cfg(feature = "gnu-mode")]
+        gnu_mode: bool,
     }
 
     /// Parse environment variables for the CLI.
@@ -784,9 +784,9 @@ mod cli {
     {
         let vars: Vec<String> = vars.into_iter().map(|(name, _)| name).collect();
         Vars {
-            #[cfg(feature = "classic")]
-            classic: vars.contains(&CLASSIC_MODE.to_owned()),
             debug: vars.contains(&DEBUG_MODE.to_owned()),
+            #[cfg(feature = "gnu-mode")]
+            gnu_mode: vars.contains(&GNU_MODE.to_owned()),
         }
     }
 
@@ -801,19 +801,19 @@ mod cli {
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        #[cfg(feature = "classic")]
-        fn classic_not_set(vars: TestVars) {
-            prop_assume!(!vars.contains_key(super::CLASSIC_MODE));
+        #[cfg(feature = "gnu-mode")]
+        fn gnu_mode_not_set(vars: TestVars) {
+            prop_assume!(!vars.contains_key(super::GNU_MODE));
 
             let out = parse_vars(vars.inner());
-            prop_assert!(!out.classic);
+            prop_assert!(!out.gnu_mode);
         }
 
         #[proptest]
-        #[cfg(feature = "classic")]
-        fn classic_set(vars: TestVarsAndIndex, val: String) {
-            let out = parse_vars(vars.insert((super::CLASSIC_MODE, &val)));
-            prop_assert!(out.classic);
+        #[cfg(feature = "gnu-mode")]
+        fn gnu_mode_set(vars: TestVarsAndIndex, val: String) {
+            let out = parse_vars(vars.insert((super::GNU_MODE, &val)));
+            prop_assert!(out.gnu_mode);
         }
 
         #[proptest]
@@ -927,15 +927,15 @@ mod cli {
 
         /// Utility functionality for working with [`Vars`] in tests.
         impl Vars {
-            /// Check if [`Vars::classic`] is set to true.
-            #[cfg(feature = "classic")]
-            pub fn is_classic(self) -> bool {
-                self.classic
+            /// Check if [`Vars::gnu_mode`] is set to true.
+            #[cfg(feature = "gnu-mode")]
+            pub fn gnu_mode(self) -> bool {
+                self.gnu_mode
             }
 
-            /// Always returns `false` (because the "classic" feature is off).
-            #[cfg(not(feature = "classic"))]
-            pub fn is_classic(self) -> bool {
+            /// Always returns `false` (because the "gnu-mode" feature is off).
+            #[cfg(not(feature = "gnu-mode"))]
+            pub fn gnu_mode(self) -> bool {
                 false
             }
         }
@@ -955,7 +955,7 @@ mod cli {
         /// use cli::Vars;
         ///
         /// let args = vec!["--foo", "bar"];
-        /// let vars = Vars { classic: false, debug: false };
+        /// let vars = Vars { debug: false, gnu_mode: false };
         /// let out = parse_args(args, vars);
         /// assert!(out.is_err());
         /// ```
@@ -1096,7 +1096,7 @@ mod cli {
             type Strategy = BoxedStrategy<Self>;
 
             fn arbitrary_with(_: ()) -> Self::Strategy {
-                const KNOWN_VAR_PATTERN: &str = "RUST_RM_CLASSIC|DEBUG";
+                const KNOWN_VAR_PATTERN: &str = "RUST_RM_GNU_MODE|DEBUG";
                 const GENERAL_VAR_PATTERN: &str = "[a-zA-Z_]+";
 
                 let strategies = vec![(1, KNOWN_VAR_PATTERN), (10, GENERAL_VAR_PATTERN)];

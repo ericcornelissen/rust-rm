@@ -1,6 +1,6 @@
 # `rust-rm`
 
-A CLI like the [`rm(1)`] Unix command but more modern and designed for humans. Aims to provide an
+A CLI like the [GNU version of `rm(1)`] but more modern and designed for humans. Aims to provide an
 `rm` command that feels familiar yet is safer and more user friendly. To this end it:
 
 - Defaults to a dry run, allowing for review before removing;
@@ -8,7 +8,7 @@ A CLI like the [`rm(1)`] Unix command but more modern and designed for humans. A
 - Supports moving to thrash, thanks to the [`trash` crate];
 - Offers an excellent CLI experience, thanks to the [`clap` crate];
 
-[`rm(1)`]: https://man7.org/linux/man-pages/man1/rm.1.html
+[gnu version of `rm(1)`]: https://man7.org/linux/man-pages/man1/rm.1.html
 [`clap` crate]: https://crates.io/crates/clap
 [`trash` crate]: https://crates.io/crates/trash
 
@@ -87,13 +87,13 @@ just features=[FEATURES] build
 
 where `[FEATURES]` is one or more of:
 
-- `classic`: to include support for the [classic mode](#classic-mode).
+- `gnu-mode`: to include support for the [GNU mode](#gnu-mode).
 - `trash`: to include support for the `--trash` option.
 
 For example:
 
 ```shell
-just features=classic,trash build
+just features=gnu-mode,trash build
 ```
 
 Or, to omit all optional features:
@@ -102,15 +102,15 @@ Or, to omit all optional features:
 just features= build
 ```
 
-## Classic Mode
+## GNU Mode
 
-The environment variable `RUST_RM_CLASSIC` can be used to enable _classic mode_. This mode aims to
-offer some opt-in backwards compatibility with Unix `rm(1)`. It's meant to be useful for scripts. As
-such, it aims to be compatible with non-failing and semantically valid use cases.
+The environment variable `RUST_RM_GNU_MODE` can be used to enable _GNU mode_. This mode aims to
+offer some opt-in backwards compatibility with the GNU version of `rm(1)`. It's meant to be useful
+for scripts. As such, it aims to be compatible with non-failing and semantically valid use cases.
 
-> **Note**: Classic mode is only available if the `classic` feature was enabled at compile time.
+> **Note**: GNU mode is only available if the `gnu-mode` feature was enabled at compile time.
 
-Classic mode will cause `rm` to:
+GNU mode mode will cause `rm` to:
 
 - Remove (unlink) files and directories without `--force` or `--interactive`.
 - Behave `--blind` when `--force` is used (and forget the `--blind` flag).
@@ -119,7 +119,7 @@ Classic mode will cause `rm` to:
 
 It won't cause `rm` to:
 
-- Have the same `stdout`/`stderr`/`stdin` as `rm(1)`.
+- Change its `stdout`/`stderr`/`stdin`.
 - Support the `-R` flag.
 - Support the `-I` or `--interactive=WHEN` flags.
 
