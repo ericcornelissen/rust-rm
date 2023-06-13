@@ -38,7 +38,7 @@ mod cli {
     #[cfg(test)]
     use proptest_derive::Arbitrary;
 
-    /// Remove (unlink) the PATH(s) - v23.04
+    /// Remove (unlink) the PATH(s) - v23.06
     ///
     /// Does not remove anything by default, use either the option --force or --interactive to
     /// perform the removal.
@@ -759,12 +759,12 @@ mod cli {
         }
     }
 
+    /// A standard environment variable name to enable verbose mode.
+    const DEBUG_MODE: &str = "DEBUG";
+
     /// The environment variable name to enable compatibility mode with the GNU version of `rm(1)`.
     #[cfg(feature = "gnu-mode")]
     const GNU_MODE: &str = "RUST_RM_GNU_MODE";
-
-    /// A standard environment variable name to enable verbose mode.
-    const DEBUG_MODE: &str = "DEBUG";
 
     /// Struct representing parsed environment configuration values.
     #[cfg_attr(test, derive(Arbitrary, Clone, Copy, Debug))]

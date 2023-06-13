@@ -176,7 +176,7 @@ just ci-build
 
 ### Formatting
 
-This project is formatted using rustfmt. Ensure all changes you commit are formatted. To format
+This project is formatted using [rustfmt]. Ensure all changes you commit are formatted. To format
 the source code run the command:
 
 ```shell
@@ -284,7 +284,7 @@ commands:
 just coverage
 ```
 
-This will generate a coverage report that can be found in the `_reports/coverage/` directory.
+This will generate a coverage report which can be found in the `_reports/coverage/` directory.
 
 If necessary you can configure the feature set to test using the `features` variable to adjust the
 build, for example:
@@ -304,20 +304,13 @@ command:
 just mutation
 ```
 
-This will generate a mutation report in that can be found in the `_reports/mutants.out/` directory.
+This will generate a mutation report which can be found in the `_reports/mutants.out/` directory.
 
-You can configure the feature set to test using the `features` variable. This can be used to speed
-up mutation testing if you're only interested in a particular piece of functionality. For example:
+If necessary you can configure the feature set to mutation test using the `features` variable to
+adjust the build, for example:
 
 ```shell
 just features=gnu-mode mutation
-```
-
-You may need to use the `test_features` variable to catch all mutants since some functionality has
-no or limited coverage without these. For example:
-
-```shell
-just test_features=test-trash mutation
 ```
 
 #### Special Tests

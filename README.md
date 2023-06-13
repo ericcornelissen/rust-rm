@@ -129,7 +129,7 @@ The development of this software is guided by the following principles:
 
 - Defaults should be safe.
 - Program output is for humans.
-- Help the user to achieve what they want.
+- Help the user achieve what they want.
 
 ### Sources of Inspiration
 
