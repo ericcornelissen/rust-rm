@@ -30,6 +30,8 @@ fn main() -> ExitCode {
 mod cli {
     use super::{lang, logging, rm, transform, walk};
 
+    use std::ffi::OsString;
+
     use clap::error::Error;
     use clap::Parser;
     use log::{error, info, trace};
@@ -100,7 +102,7 @@ mod cli {
         verbose: bool,
 
         /// The paths to remove.
-        paths: Vec<String>,
+        paths: Vec<OsString>,
     }
 
     /// Tests for the [`Args`] struct.
@@ -149,6 +151,8 @@ mod cli {
 
         use super::Vars;
 
+        use std::ffi::OsString;
+
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -158,10 +162,10 @@ mod cli {
 
             let options = args.iter().take_while(|arg| **arg != "--");
             let operands = args.iter().skip_while(|arg| **arg != "--").skip(1);
-            let expected: Vec<String> = options
+            let expected: Vec<OsString> = options
                 .filter(|arg| !arg.starts_with('-'))
                 .chain(operands)
-                .map(String::from)
+                .map(OsString::from)
                 .collect();
 
             match parse_args(args, vars) {
