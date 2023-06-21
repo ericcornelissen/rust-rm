@@ -26,7 +26,7 @@ test-trash = []
 
 [dependencies]
 anstream = "0.3.2"
-clap = { version = "4.3.2", features = ["derive"] }
+clap = { version = "4.3.5", features = ["derive"] }
 log = "0.4.19"
 owo-colors = "3.5.0"
 trash = { version = "3.0.3", optional = true }
