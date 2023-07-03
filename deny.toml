@@ -1,9 +1,7 @@
 # Check out cargo-deny at: https://github.com/EmbarkStudios/cargo-deny
 
 [advisories]
-ignore = [
-    "RUSTSEC-2020-0071", # Per https://github.com/chronotope/chrono/pull/969
-]
+ignore = []
 unmaintained = "warn"
 vulnerability = "deny"
 yanked = "deny"
