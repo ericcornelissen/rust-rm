@@ -231,7 +231,7 @@ _profile_prepare:
 [private]
 @ci-coverage:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-trash \
+		test_features=test-dangerous,test-symlink,test-trash \
 		coverage
 
 [private]
@@ -245,13 +245,13 @@ _profile_prepare:
 [private]
 @ci-mutation:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-trash \
+		test_features=test-dangerous,test-symlink,test-trash \
 		mutation
 
 [private]
 @ci-test:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-trash \
+		test_features=test-dangerous,test-symlink,test-trash \
 		test-each
 
 [private]

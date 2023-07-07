@@ -21,6 +21,8 @@ trash = ["dep:trash"]
 ## Test-only features
 # Used for running dangerous tests conditionally.
 test-dangerous = []
+# Used for running tests involving symbolic links conditionally (Windows only).
+test-symlink = []
 # Used for running test that move things to the trash conditionally.
 test-trash = []
 
@@ -50,4 +52,4 @@ panic = "abort"
 strip = "debuginfo"
 
 [package.metadata.cargo-all-features]
-denylist = ["test-dangerous", "test-trash"]
+denylist = ["test-dangerous", "test-symlink", "test-trash"]

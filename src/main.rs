@@ -1258,6 +1258,10 @@ mod fs {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -1393,6 +1397,10 @@ mod fs {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -1410,6 +1418,10 @@ mod fs {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_filled_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -1427,6 +1439,10 @@ mod fs {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -1444,6 +1460,10 @@ mod fs {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2000,6 +2020,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -2017,6 +2041,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2034,6 +2062,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2207,6 +2239,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -2224,6 +2260,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2241,6 +2281,10 @@ mod walk {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2524,7 +2568,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        #[cfg_attr(
+            any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
+            ignore = "Only run with the test-trash (and test-symlink on Windows) feature"
+        )]
         fn symlink_to_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -2546,7 +2593,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2617,7 +2667,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        #[cfg_attr(
+            any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
+            ignore = "Only run with the test-trash (and test-symlink on Windows) feature"
+        )]
         fn symlink_to_file_at_location_of_a_file_toctou() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -2639,7 +2692,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_dir_at_location_of_a_dir_toctou() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2800,6 +2856,10 @@ mod rm {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -2887,6 +2947,10 @@ mod rm {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_file_at_location_of_a_file_toctou() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -3279,7 +3343,7 @@ mod transform {
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        #[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+        #[cfg_attr(windows, ignore = "TODO: investigate errors on Windows")]
         fn non_root(item: walk::Item) {
             if let Ok(entry) = item.inner.as_ref() {
                 prop_assume!(entry.path() != Path::new("/"));
@@ -3586,6 +3650,10 @@ mod transform {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn new_prompt_for_symlink_to_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
@@ -3607,6 +3675,10 @@ mod transform {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn new_prompt_for_symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -3628,6 +3700,10 @@ mod transform {
         }
 
         #[test]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn new_prompt_for_symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");

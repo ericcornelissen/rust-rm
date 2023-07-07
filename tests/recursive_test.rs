@@ -172,6 +172,10 @@ fn nested_dir() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_file() -> TestResult {
     let linkname = "link";
 

@@ -38,6 +38,10 @@ fn file() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink() -> TestResult {
     let linkname = "link";
 

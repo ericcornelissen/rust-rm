@@ -44,6 +44,10 @@ fn remove_file_no() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn remove_symlink_no() -> TestResult {
     let linkname = "link";
 
@@ -201,6 +205,10 @@ fn remove_file_yes() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn remove_symlink_yes() -> TestResult {
     let linkname = "link";
 
