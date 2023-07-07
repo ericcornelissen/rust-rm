@@ -350,6 +350,30 @@ To run dangerous tests use the command:
 just test_features=test-dangerous test
 ```
 
+##### Symlink Tests
+
+Some tests work with symbolic links (symlinks). Working with symlinks on Windows requires elevated
+permissions, so these tests aren't run by default on Windows to avoid unexpected errors.
+
+The following configuration must be used on all tests that (potentially) create symbolic links:
+
+```rust
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
+```
+
+To run tests involving symbolic links on Windows ensure you have elevated privileges and use the
+command:
+
+```shell
+just test_features=test-symlink test
+```
+
+> **Note**: On non-Windows systems tests involving symlinks are run by default (regardless of the
+> `test-symlink` feature).
+
 ### Documenting
 
 This project is extensively documented. All source code should be documented to aid reuse without

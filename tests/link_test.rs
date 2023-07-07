@@ -12,6 +12,10 @@ use assert_fs::prelude::*;
 use predicates::prelude::*;
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_a_file_remove_link() -> TestResult {
     let linkname = "link";
 
@@ -50,6 +54,10 @@ fn symlink_to_a_file_remove_link() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_a_file_remove_file() -> TestResult {
     let filename = "linked_file";
     let linkname = "link";
@@ -127,6 +135,10 @@ fn symlink_to_an_empty_dir_remove_link() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_an_empty_dir_remove_dir() -> TestResult {
     let dirname = "linked_dir";
     let linkname = "link";

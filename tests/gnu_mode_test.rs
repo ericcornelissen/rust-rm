@@ -87,6 +87,10 @@ fn remove_filled_dir_recursively() -> TestResult {
 
 #[test]
 #[cfg(feature = "gnu-mode")]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn remove_symlink() -> TestResult {
     let linkname = "link";
 

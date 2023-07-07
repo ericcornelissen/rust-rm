@@ -149,7 +149,10 @@ fn filled_directory() -> TestResult {
 
 #[test]
 #[cfg(feature = "trash")]
-#[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+#[cfg_attr(
+    any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
+    ignore = "Only run with the test-trash (and test-symlink on Windows) feature"
+)]
 fn link() -> TestResult {
     let linkname = "link";
 

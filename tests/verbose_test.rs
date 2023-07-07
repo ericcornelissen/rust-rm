@@ -26,6 +26,10 @@ fn nothing_to_do() -> TestResult {
 }
 
 #[test]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn found_file_dir_and_link() -> TestResult {
     let filename = "file";
     let dirname = "dir";
