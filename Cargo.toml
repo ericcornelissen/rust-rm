@@ -26,10 +26,10 @@ test-trash = []
 
 [dependencies]
 anstream = "0.3.2"
-clap = { version = "4.3.5", features = ["derive"] }
+clap = { version = "4.3.11", features = ["derive"] }
 log = "0.4.19"
 owo-colors = "3.5.0"
-trash = { version = "3.0.4", optional = true }
+trash = { version = "3.0.5", optional = true }
 
 [dev-dependencies]
 assert_cmd = { version = "2.0.8", features = ["color-auto"] }

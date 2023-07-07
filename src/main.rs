@@ -2568,7 +2568,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(not(feature = "test-trash"), ignore = "Only run with the test-trash feature")]
+        #[cfg_attr(
+            any(not(feature = "test-trash"), windows),
+            ignore = "Only run with the test-trash feature"
+        )]
         fn symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
