@@ -2594,8 +2594,8 @@ mod rm {
 
         #[test]
         #[cfg_attr(
-            all(windows, not(feature = "test-symlink")),
-            ignore = "Only run with the test-symlink feature"
+            any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
+            ignore = "Only run with the test-trash (and test-symlink on Windows) feature"
         )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
@@ -2693,8 +2693,8 @@ mod rm {
 
         #[test]
         #[cfg_attr(
-            all(windows, not(feature = "test-symlink")),
-            ignore = "Only run with the test-symlink feature"
+            any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
+            ignore = "Only run with the test-trash (and test-symlink on Windows) feature"
         )]
         fn symlink_to_dir_at_location_of_a_dir_toctou() -> TestResult {
             with_test_dir(|test_dir| {
@@ -2738,7 +2738,16 @@ mod rm {
         let path = entry.path();
         let result = match entry.kind() {
             fs::EntryKind::Dir => remove_dir(path),
-            fs::EntryKind::File | fs::EntryKind::Symlink => remove_file(path),
+            fs::EntryKind::File => remove_file(path),
+            #[cfg(not(windows))]
+            fs::EntryKind::Symlink => remove_file(path),
+            #[cfg(windows)]
+            fs::EntryKind::Symlink => match std::fs::metadata(&path) {
+                Ok(metadata) if metadata.is_dir() => remove_dir(path),
+                Ok(metadata) if metadata.is_file() => remove_file(path),
+                Ok(_) => unreachable!(),
+                Err(err) => Err(err),
+            },
         };
 
         match result {
@@ -2881,7 +2890,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_empty_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2903,7 +2915,10 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+        #[cfg_attr(
+            all(windows, not(feature = "test-symlink")),
+            ignore = "Only run with the test-symlink feature"
+        )]
         fn symlink_to_filled_dir() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2972,7 +2987,7 @@ mod rm {
         }
 
         #[test]
-        #[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+        #[cfg(not(windows))]
         fn symlink_to_dir_at_location_of_a_dir_toctou() -> TestResult {
             with_test_dir(|test_dir| {
                 let dir = test_dir.child("dir");
@@ -2988,6 +3003,32 @@ mod rm {
 
                 dir.assert(predicate::path::exists());
                 link.assert(predicate::path::exists());
+
+                Ok(())
+            })
+        }
+
+        #[test]
+        #[cfg(windows)]
+        #[cfg_attr(
+            not(feature = "test-symlink"),
+            ignore = "Only run with the test-symlink feature"
+        )]
+        fn symlink_to_dir_at_location_of_a_dir_toctou() -> TestResult {
+            with_test_dir(|test_dir| {
+                let dir = test_dir.child("dir");
+                dir.create_dir_all()?;
+                let link = test_dir.child("link");
+                link.symlink_to_dir(&dir)?;
+
+                let path = link.path();
+                let entry = fs::test_helpers::new_dir(path);
+
+                let out = remove(entry);
+                assert_eq!(out, Ok(format!("Removed {}", path.display().bold())));
+
+                dir.assert(predicate::path::exists());
+                link.assert(predicate::path::missing());
 
                 Ok(())
             })
