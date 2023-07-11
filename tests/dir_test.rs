@@ -147,7 +147,10 @@ fn symlink_to_file() -> TestResult {
 }
 
 #[test]
-#[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_empty_dir() -> TestResult {
     let linkname = "link";
 
@@ -186,7 +189,10 @@ fn symlink_to_empty_dir() -> TestResult {
 }
 
 #[test]
-#[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_filled_dir() -> TestResult {
     let linkname = "link";
 

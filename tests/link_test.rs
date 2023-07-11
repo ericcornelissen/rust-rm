@@ -96,7 +96,10 @@ fn symlink_to_a_file_remove_file() -> TestResult {
 }
 
 #[test]
-#[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_an_empty_dir_remove_link() -> TestResult {
     let linkname = "link";
 
@@ -177,7 +180,10 @@ fn symlink_to_an_empty_dir_remove_dir() -> TestResult {
 }
 
 #[test]
-#[cfg_attr(windows, ignore = "TODO: investigate symlink test errors on Windows")]
+#[cfg_attr(
+    all(windows, not(feature = "test-symlink")),
+    ignore = "Only run with the test-symlink feature"
+)]
 fn symlink_to_a_filled_dir_remove_link() -> TestResult {
     let linkname = "link";
 
