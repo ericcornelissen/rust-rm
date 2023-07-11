@@ -231,7 +231,7 @@ _profile_prepare:
 [private]
 @ci-coverage:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-symlink,test-trash \
+		test_features={{ALL_TEST_FEATURES}} \
 		coverage
 
 [private]
@@ -245,13 +245,13 @@ _profile_prepare:
 [private]
 @ci-mutation:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-symlink,test-trash \
+		test_features={{ALL_TEST_FEATURES}} \
 		mutation
 
 [private]
 @ci-test:
 	just ci={{TRUE}} \
-		test_features=test-dangerous,test-symlink,test-trash \
+		test_features={{ALL_TEST_FEATURES}} \
 		test-each
 
 [private]
@@ -273,6 +273,8 @@ STD_TEST_ARGS := ""
 CI_ONLY_CARGO_ARGS := if ci == TRUE { "--locked" } else { "" }
 CI_ONLY_COVERAGE_ARGS := if ci == TRUE { "--out lcov" } else { "" }
 CI_ONLY_TEST_ARGS := if ci == TRUE { "--no-fail-fast" } else { "" }
+
+ALL_TEST_FEATURES := "test-dangerous,test-symlink,test-trash"
 
 BUILD_ARGS := STD_BUILD_ARGS + " " + CI_ONLY_CARGO_ARGS
 COVERAGE_ARGS := STD_COVERAGE_ARGS + " " + CI_ONLY_CARGO_ARGS + " " + CI_ONLY_COVERAGE_ARGS
