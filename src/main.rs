@@ -2619,7 +2619,7 @@ mod rm {
 
         #[test]
         #[cfg_attr(
-            any(not(feature = "test-trash"), windows),
+            any(not(feature = "test-trash"), all(windows, not(feature = "test-symlink"))),
             ignore = "Only run with the test-trash feature"
         )]
         fn symlink_to_filled_dir() -> TestResult {
