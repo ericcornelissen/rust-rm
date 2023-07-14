@@ -206,6 +206,7 @@ _profile_prepare:
 		--deny clippy::print_stdout \
 		--deny clippy::rc_buffer \
 		--deny clippy::rc_mutex \
+		--deny clippy::ref_patterns \
 		--deny clippy::unwrap_used
 
 @_vet_verify_project:
