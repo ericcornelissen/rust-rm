@@ -3384,10 +3384,9 @@ mod transform {
         use proptest_attr_macro::proptest;
 
         #[proptest]
-        #[cfg_attr(windows, ignore = "TODO: investigate errors on Windows")]
         fn non_root(item: walk::Item) {
             if let Ok(entry) = item.inner.as_ref() {
-                prop_assume!(entry.path() != Path::new("/"));
+                prop_assume!(entry.path().parent().is_some());
                 prop_assume!(!entry.path().as_os_str().is_empty());
             }
 
@@ -3397,15 +3396,24 @@ mod transform {
 
         #[test]
         fn entry_root() {
-            let path = Path::new("/");
-            let entry = fs::test_helpers::new_dir(path);
+            test_is_root("/");
+        }
+
+        #[test]
+        #[cfg(windows)]
+        fn entry_drive() {
+            test_is_root("C:\\");
+        }
+
+        fn test_is_root<P: AsRef<Path>>(path: P) {
+            let entry = fs::test_helpers::new_dir(&path);
 
             let out = disallow_root(entry.into());
             assert!(out.inner.is_err());
 
             let err = out.inner.expect_err("is_err() should be asserted");
             assert_eq!(err.kind(), fs::ErrorKind::Refused);
-            assert_eq!(err.path(), path);
+            assert_eq!(err.path(), path.as_ref().to_owned());
         }
     }
 
