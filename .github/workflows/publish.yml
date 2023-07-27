@@ -1,0 +1,123 @@
+# Usage:
+# Create a version tag ("v$YEAR.$MONTH") with an annotation containing the release notes and push
+# the tag to GitHub. For example, use:
+#
+#     git tag -a v23.07
+#     git push origin v23.07
+#
+# This workflow will create a GitHub Release for the version using the annotation as release text
+# with several compiled version of the project attached.
+
+name: Publish
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+
+
+permissions: read-all
+
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    name: Build (${{ matrix.os-name }}, ${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-12
+            os-name: MacOS
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-22.04
+            os-name: Ubuntu
+          - target: x86_64-apple-darwin
+            os: macos-12
+            os-name: MacOS
+          - target: x86_64-pc-windows-msvc
+            os: windows-2022
+            os-name: Windows
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+            os-name: Ubuntu
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Install Rust toolchain
+        run: |
+          rustup show
+          rustup target add ${{ matrix.target }}
+      - name: Install cross
+        uses: taiki-e/install-action@1d74f337f279f52e54c352ebe5b96eaa36c948d3 # v2.9.0
+        with:
+          tool: cross@0.2.5
+      - name: Build binary
+        run: cross build --release --target ${{ matrix.target }}
+      - name: Create archive
+        id: archive
+        shell: bash
+        run: |
+          NAME='rust-rm'
+          ARTIFACT_NAME="$NAME-${{ matrix.target }}"
+
+          mkdir "$ARTIFACT_NAME"
+          if [ '${{ matrix.os-name }}' = 'Windows' ]; then
+            mv "./target/${{ matrix.target }}/release/$NAME.exe" "./$NAME.exe"
+          else
+            mv "./target/${{ matrix.target }}/release/$NAME" "./$NAME"
+          fi
+
+          if [ '${{ matrix.os-name }}' = 'Windows' ]; then
+            7z a "$ARTIFACT_NAME.zip" "./$NAME.exe"
+            echo "artifact=$ARTIFACT_NAME.zip" >>"$GITHUB_OUTPUT"
+          else
+            tar -czf "$ARTIFACT_NAME.tar.gz" "./$NAME"
+            echo "artifact=$ARTIFACT_NAME.tar.gz" >>"$GITHUB_OUTPUT"
+          fi
+      - name: Upload archive
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+        with:
+          path: ${{ steps.archive.outputs.artifact }}
+          retention-days: 1
+  github-release:
+    name: GitHub Release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write # To create a GitHub Release
+    needs:
+      - build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+      - name: Fetch tags
+        run: git fetch --tags --force
+      - name: Get release version
+        id: version
+        shell: bash
+        run: |
+          echo "version=${GITHUB_REF#refs/tags/}" >>"$GITHUB_OUTPUT"
+      - name: Get release notes
+        id: notes
+        shell: bash
+        run: |
+          {
+            echo 'notes<<EOF'
+            git for-each-ref "$GITHUB_REF" --format '%(contents)'
+            echo 'EOF'
+          } >>"$GITHUB_OUTPUT"
+      - name: Download artifacts
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+        id: download
+        with:
+          path: ${{ runner.temp }}/artifacts
+      - name: Create GitHub release
+        uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e # v1.12.0
+        with:
+          tag: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: ${{ steps.notes.outputs.notes }}
+          artifacts: ${{ steps.download.outputs.download-path }}/artifact/*
+          draft: false
+          prerelease: false
