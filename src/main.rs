@@ -40,7 +40,7 @@ mod cli {
     #[cfg(test)]
     use proptest_derive::Arbitrary;
 
-    /// Remove (unlink) the PATH(s) - v23.06
+    /// Remove (unlink) the PATH(s) - v23.07
     ///
     /// Does not remove anything by default, use either the option --force or --interactive to
     /// perform the removal.
