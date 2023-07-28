@@ -29,6 +29,9 @@ this document.
   - [Vetting](#vetting)
   - [Auditing](#auditing)
   - [License Compliance](#license-compliance)
+- [Releasing](#releasing)
+  - [Release Numbering](#release-numbering)
+  - [Release Process](#release-process)
 - [IDEs](#ides)
   - [Visual Studio Code](#visual-studio-code)
 
@@ -445,6 +448,53 @@ just compliance
 ```
 
 The license compliance policy is stored in `deny.toml`.
+
+---
+
+## Releasing
+
+### Release Numbering
+
+Releases of this project are numbered based on the year and month in which they were released. Both
+the year and month must always be represented with two digits, for example `23.01` for January 2023.
+
+In the event a patch has to be released when a release already took place that month an incremental
+integer suffix is added to the release number, for example `23.01-1` (i.e. `23.01 == 23.01-0`).
+
+### Release Process
+
+To create a new release, first update the release number in the CLI help text by changing the
+following line, for example:
+
+```diff
+- /// Remove (unlink) the PATH(s) - v23.06
++ /// Remove (unlink) the PATH(s) - v23.07
+```
+
+Commit this change with a message along the lines of "Version bump", for example:
+
+```shell
+git commit -m "Version bump"
+```
+
+Get this commit onto the project's default branch. When it is, tag the commit with same value used
+for the CLI help text. Give the tag an annotation with a list of changes since the last release, for
+example:
+
+```shell
+git tag -a v23.07
+```
+
+Push the tag to the GitHub repository, for example:
+
+```shell
+git push origin v23.07
+```
+
+This will trigger the [`publish.yml` workflow] which will create a GitHub Release for the release
+and compiled binaries for various platforms and architectures.
+
+[`publish.yml` workflow]: ./.github/workflows/publish.yml
 
 ---
 

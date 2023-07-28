@@ -1,13 +1,3 @@
-# Usage:
-# Create a version tag ("v$YEAR.$MONTH") with an annotation containing the release notes and push
-# the tag to GitHub. For example, use:
-#
-#     git tag -a v23.07
-#     git push origin v23.07
-#
-# This workflow will create a GitHub Release for the version using the annotation as release text
-# with several compiled version of the project attached.
-
 name: Publish
 on:
   push:
