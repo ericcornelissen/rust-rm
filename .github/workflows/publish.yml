@@ -40,7 +40,7 @@ jobs:
           rustup show
           rustup target add ${{ matrix.target }}
       - name: Install cross
-        uses: taiki-e/install-action@991b1ec8149510c906067891b783cb60d886ae26 # v2.13.3
+        uses: taiki-e/install-action@db5a06b7aacc2831e3ec8242d4ae27dbf6045766 # v2.15.0
         with:
           tool: cross@0.2.5
       - name: Build binary
