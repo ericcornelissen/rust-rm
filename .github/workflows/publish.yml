@@ -36,30 +36,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
       - name: Install Rust toolchain
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           rustup show
-          rustup target add ${{ matrix.target }}
+          rustup target add "$TARGET"
       - name: Install cross
         uses: taiki-e/install-action@991b1ec8149510c906067891b783cb60d886ae26 # v2.13.3
         with:
           tool: cross@0.2.5
       - name: Build binary
-        run: cross build --release --target ${{ matrix.target }}
+        env:
+          TARGET: ${{ matrix.target }}
+        run: cross build --release --target "$TARGET"
       - name: Create archive
         id: archive
         shell: bash
+        env:
+          OS_NAME: ${{ matrix.os-name }}
+          TARGET: ${{ matrix.target }}
         run: |
           NAME='rust-rm'
-          ARTIFACT_NAME="$NAME-${{ matrix.target }}"
+          ARTIFACT_NAME="$NAME-$TARGET"
 
           mkdir "$ARTIFACT_NAME"
-          if [ '${{ matrix.os-name }}' = 'Windows' ]; then
-            mv "./target/${{ matrix.target }}/release/$NAME.exe" "./$NAME.exe"
+          if [ "$OS_NAME" = 'Windows' ]; then
+            mv "./target/$TARGET/release/$NAME.exe" "./$NAME.exe"
           else
-            mv "./target/${{ matrix.target }}/release/$NAME" "./$NAME"
+            mv "./target/$TARGET/release/$NAME" "./$NAME"
           fi
 
-          if [ '${{ matrix.os-name }}' = 'Windows' ]; then
+          if [ "$OS_NAME" = 'Windows' ]; then
             7z a "$ARTIFACT_NAME.zip" "./$NAME.exe"
             echo "artifact=$ARTIFACT_NAME.zip" >>"$GITHUB_OUTPUT"
           else
