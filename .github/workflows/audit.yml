@@ -38,11 +38,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@991b1ec8149510c906067891b783cb60d886ae26 # v2.13.3
+        uses: taiki-e/install-action@c9ba9d12d07c1ddcffa40b34f54a93e84ff95402 # v2.16.0
         with:
           tool: just@1
       - name: Install cargo-deny
-        uses: taiki-e/install-action@991b1ec8149510c906067891b783cb60d886ae26 # v2.13.3
+        uses: taiki-e/install-action@c9ba9d12d07c1ddcffa40b34f54a93e84ff95402 # v2.16.0
         with:
           tool: cargo-deny@0.13.9
       - name: Audit
