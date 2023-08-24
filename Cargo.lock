@@ -44,7 +44,22 @@ dependencies = [
  "anstyle",
  "anstyle-parse",
  "anstyle-query",
- "anstyle-wincon",
+ "anstyle-wincon 1.0.1",
+ "colorchoice",
+ "is-terminal",
+ "utf8parse",
+]
+
+[[package]]
+name = "anstream"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "735917dc4838cee6a072ea1fd4b6e4e6ff00cbe95c7875967482961c36a0b68f"
+dependencies = [
+ "anstyle",
+ "anstyle-parse",
+ "anstyle-query",
+ "anstyle-wincon 2.0.0",
  "colorchoice",
  "is-terminal",
  "utf8parse",
@@ -85,12 +100,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "anstyle-wincon"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cebc21b696ea5e658c7771671b765fb85f119da0ce0d42b012136ad40003dfa5"
+dependencies = [
+ "anstyle",
+ "windows-sys",
+]
+
+[[package]]
 name = "assert_cmd"
 version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86d6b683edf8d1119fe420a94f8a7e389239666aa72e65495d91c00462510151"
 dependencies = [
- "anstream",
+ "anstream 0.3.2",
  "anstyle",
  "bstr",
  "doc-comment",
@@ -212,7 +237,7 @@ version = "4.3.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f2763db829349bf00cfc06251268865ed4363b93a943174f638daf3ecdba2cd"
 dependencies = [
- "anstream",
+ "anstream 0.3.2",
  "anstyle",
  "clap_lex",
  "strsim",
@@ -768,7 +793,7 @@ checksum = "2ab07dc67230e4a4718e70fd5c20055a4334b121f1f9db8fe63ef39ce9b8c846"
 name = "rust-rm"
 version = "0.1.0"
 dependencies = [
- "anstream",
+ "anstream 0.4.0",
  "assert_cmd",
  "assert_fs",
  "clap",
