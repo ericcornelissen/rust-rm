@@ -63,13 +63,13 @@ macro_rules! has_exactly_lines {
         $( .and(predicates::str::contains($line)) )*
         // ... and has the same length as all strings taken together ...
         .and(predicates::function::function(|s: &str| {
-            s.len() == vec![$( $line, )*].join("").len()
+            s.len() == [$( $line, )*].join("").len()
         }))
         // ... means it only has these lines.
     };
     ($($line:expr),* ; $($last_line:expr),* $(,)?) => {
         has_exactly_lines!($( $line, )* $( $last_line, )*).and(
-            predicates::str::ends_with(vec![$( $last_line, )*].join(""))
+            predicates::str::ends_with([$( $last_line, )*].join(""))
         )
     };
 }
@@ -132,7 +132,7 @@ macro_rules! has_lines {
     };
     ($($line:expr),* ; $($last_line:expr),* $(,)?) => {
         has_lines!($( $line, )* $( $last_line, )*).and(
-            predicates::str::ends_with(vec![$( $last_line, )*].join(""))
+            predicates::str::ends_with([$( $last_line, )*].join(""))
         )
     };
 }
