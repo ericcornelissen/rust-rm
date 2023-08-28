@@ -52,16 +52,15 @@ dependencies = [
 
 [[package]]
 name = "anstream"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "735917dc4838cee6a072ea1fd4b6e4e6ff00cbe95c7875967482961c36a0b68f"
+checksum = "b1f58811cfac344940f1a400b6e6231ce35171f614f26439e80f8c1465c5cc0c"
 dependencies = [
  "anstyle",
  "anstyle-parse",
  "anstyle-query",
  "anstyle-wincon 2.0.0",
  "colorchoice",
- "is-terminal",
  "utf8parse",
 ]
 
@@ -793,7 +792,7 @@ checksum = "2ab07dc67230e4a4718e70fd5c20055a4334b121f1f9db8fe63ef39ce9b8c846"
 name = "rust-rm"
 version = "0.1.0"
 dependencies = [
- "anstream 0.4.0",
+ "anstream 0.5.0",
  "assert_cmd",
  "assert_fs",
  "clap",
