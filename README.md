@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
+
 # `rust-rm`
 
 A CLI like the [GNU version of `rm(1)`] but more modern and designed for humans. Aims to provide an
