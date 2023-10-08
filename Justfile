@@ -191,6 +191,7 @@ _profile_prepare:
 		--deny clippy::style \
 		--deny clippy::suspicious \
 		\
+		--deny clippy::absolute_paths \
 		--deny clippy::allow_attributes_without_reason \
 		--deny clippy::arithmetic_side_effects \
 		--deny clippy::dbg_macro \
@@ -207,7 +208,10 @@ _profile_prepare:
 		--deny clippy::rc_buffer \
 		--deny clippy::rc_mutex \
 		--deny clippy::ref_patterns \
-		--deny clippy::unwrap_used
+		--deny clippy::string_lit_chars_any \
+		--deny clippy::unwrap_used \
+		\
+		--allow clippy::ignored_unit_patterns
 
 @_vet_verify_project:
 	echo 'Running "cargo verify-project"...'
