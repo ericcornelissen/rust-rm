@@ -10,12 +10,13 @@
 //! A CLI like the GNU version of `rm(1)` but more modern and designed for humans. Aims to provide
 //! an `rm` command that feels familiar yet is safer and more user friendly.
 
+use std::env;
 use std::process::ExitCode;
 
 /// Run with arguments passed via the CLI.
 fn main() -> ExitCode {
-    let raw_args = std::env::args();
-    let raw_vars = std::env::vars();
+    let raw_args = env::args();
+    let raw_vars = env::vars();
 
     let vars = cli::parse_vars(raw_vars);
     let args = cli::parse_args(raw_args, vars).unwrap_or_else(|err| err.exit());
@@ -170,7 +171,7 @@ mod cli {
 
             match parse_args(args, vars) {
                 Ok(args) => prop_assert_eq!(args.paths, expected),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -181,7 +182,7 @@ mod cli {
 
             match parse_args(args.insert("--blind"), vars) {
                 Ok(args) => prop_assert!(args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -192,7 +193,7 @@ mod cli {
 
             match parse_args(args.insert("-b"), vars) {
                 Ok(args) => prop_assert!(args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -204,7 +205,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -214,7 +215,7 @@ mod cli {
 
             match parse_args(args.insert("--dir"), vars) {
                 Ok(args) => prop_assert!(args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -224,7 +225,7 @@ mod cli {
 
             match parse_args(args.insert("-d"), vars) {
                 Ok(args) => prop_assert!(args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -235,7 +236,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -246,7 +247,7 @@ mod cli {
 
             match parse_args(args.insert("--force"), vars) {
                 Ok(args) => prop_assert!(args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -257,7 +258,7 @@ mod cli {
 
             match parse_args(args.insert("-f"), vars) {
                 Ok(args) => prop_assert!(args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -269,7 +270,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -279,7 +280,7 @@ mod cli {
 
             match parse_args(args.insert("--interactive"), vars) {
                 Ok(args) => prop_assert!(args.interactive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -289,7 +290,7 @@ mod cli {
 
             match parse_args(args.insert("-i"), vars) {
                 Ok(args) => prop_assert!(args.interactive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -300,7 +301,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.interactive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -310,7 +311,7 @@ mod cli {
 
             match parse_args(args.insert("--no-preserve-root"), vars) {
                 Ok(args) => prop_assert!(args.no_preserve_root),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -320,7 +321,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.no_preserve_root),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -331,7 +332,7 @@ mod cli {
 
             match parse_args(args.insert("--quiet"), vars) {
                 Ok(args) => prop_assert!(args.quiet),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -342,7 +343,7 @@ mod cli {
 
             match parse_args(args.insert("-q"), vars) {
                 Ok(args) => prop_assert!(args.quiet),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -354,7 +355,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.quiet),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -364,7 +365,7 @@ mod cli {
 
             match parse_args(args.insert("--recursive"), vars) {
                 Ok(args) => prop_assert!(args.recursive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -374,7 +375,7 @@ mod cli {
 
             match parse_args(args.insert("-r"), vars) {
                 Ok(args) => prop_assert!(args.recursive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -385,7 +386,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.recursive),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -397,7 +398,7 @@ mod cli {
 
             match parse_args(args.insert("--trash"), vars) {
                 Ok(args) => prop_assert!(args.trash),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -409,7 +410,7 @@ mod cli {
 
             match parse_args(args.insert("-t"), vars) {
                 Ok(args) => prop_assert!(args.trash),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -422,7 +423,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.trash),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -433,7 +434,7 @@ mod cli {
 
             match parse_args(args.insert("--verbose"), vars) {
                 Ok(args) => prop_assert!(args.verbose),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -444,7 +445,7 @@ mod cli {
 
             match parse_args(args.insert("-v"), vars) {
                 Ok(args) => prop_assert!(args.verbose),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -456,7 +457,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.verbose),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -468,7 +469,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(args.verbose),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -479,7 +480,7 @@ mod cli {
 
             match parse_args(args.insert("--verbose"), vars) {
                 Ok(args) => prop_assert!(args.verbose),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -594,7 +595,7 @@ mod cli {
 
             match parse_args(args.insert("--force"), vars) {
                 Ok(args) => prop_assert!(args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -604,7 +605,7 @@ mod cli {
 
             match parse_args(args.insert("-f"), vars) {
                 Ok(args) => prop_assert!(args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -615,7 +616,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.blind),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -625,7 +626,7 @@ mod cli {
 
             match parse_args(args.insert("--dir"), vars) {
                 Ok(args) => prop_assert!(args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -635,7 +636,7 @@ mod cli {
 
             match parse_args(args.insert("-d"), vars) {
                 Ok(args) => prop_assert!(args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -646,7 +647,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.dir),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -657,7 +658,7 @@ mod cli {
 
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -667,7 +668,7 @@ mod cli {
 
             match parse_args(args.insert("--interactive"), vars) {
                 Ok(args) => prop_assert!(!args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -677,7 +678,7 @@ mod cli {
 
             match parse_args(args.insert("-i"), vars) {
                 Ok(args) => prop_assert!(!args.force),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -685,7 +686,7 @@ mod cli {
         fn always_quiet(args: TestArgs, vars: Vars) {
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(args.quiet),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -694,7 +695,7 @@ mod cli {
         fn never_trash(args: TestArgs, vars: Vars) {
             match parse_args(args.inner(), vars) {
                 Ok(args) => prop_assert!(!args.trash),
-                Err(_) => prop_assume!(false),
+                Err(()) => prop_assume!(false),
             }
         }
 
@@ -1177,10 +1178,13 @@ mod cli {
 
 /// File system utilities.
 mod fs {
+    use std::error;
     use std::ffi::OsString;
+    use std::fmt;
     use std::fs::{read_dir, symlink_metadata, File};
     use std::io::{self, Read};
     use std::path::{Path, PathBuf};
+    use std::result;
 
     use log::trace;
     use owo_colors::OwoColorize;
@@ -1189,7 +1193,7 @@ mod fs {
     use proptest_derive::Arbitrary;
 
     /// The `Result` type for interacting with the file system.
-    pub type Result = std::result::Result<Entry, Error>;
+    pub type Result = result::Result<Entry, Error>;
 
     /// Open a handle for a file system [`Entry`].
     ///
@@ -1532,8 +1536,8 @@ mod fs {
         }
     }
 
-    impl std::fmt::Display for Entry {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl fmt::Display for Entry {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             write!(f, "{}", self.path().display())
         }
     }
@@ -1631,8 +1635,8 @@ mod fs {
         }
     }
 
-    impl std::fmt::Display for Error {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl fmt::Display for Error {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             if let Some(tip) = &self.tip {
                 write!(
                     f,
@@ -1647,7 +1651,7 @@ mod fs {
         }
     }
 
-    impl std::error::Error for Error {}
+    impl error::Error for Error {}
 
     /// Tests for the [`Error`] struct.
     #[cfg(test)]
@@ -1732,8 +1736,8 @@ mod fs {
         Unknown,
     }
 
-    impl std::fmt::Display for ErrorKind {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    impl fmt::Display for ErrorKind {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match self {
                 Self::DirectoryNotEmpty => write!(f, "Directory not empty"),
                 Self::IsADirectory => write!(f, "Is a directory"),
@@ -1774,6 +1778,7 @@ mod fs {
         use super::ErrorKind;
 
         use std::io;
+        use std::path;
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -1798,8 +1803,8 @@ mod fs {
         #[proptest]
         #[cfg(feature = "trash")]
         #[cfg(all(unix, not(target_os = "macos")))]
-        fn from_trash_file_system(kind: std::io::ErrorKind, path: String) {
-            let err = trash::Error::FileSystem { kind, path: std::path::Path::new(&path).into() };
+        fn from_trash_file_system(kind: io::ErrorKind, path: String) {
+            let err = trash::Error::FileSystem { kind, path: path::Path::new(&path).into() };
             let expected: ErrorKind = kind.into();
             prop_assert_eq!(expected, err.into());
         }
@@ -1852,6 +1857,7 @@ mod walk {
     use std::fs::read_dir;
     use std::iter;
     use std::path::{Path, PathBuf};
+    use std::result;
 
     use log::trace;
 
@@ -1970,6 +1976,8 @@ mod walk {
         use crate::test_helpers::{with_test_dir, TestResult};
 
         use super::{fs, transform};
+
+        use std::path;
 
         use assert_fs::prelude::*;
 
@@ -2096,7 +2104,7 @@ mod walk {
         }
 
         /// Convenience wrapper around [`super::given`] for use in tests.
-        fn given<P: AsRef<std::path::Path>>(path: P) -> Vec<fs::Result> {
+        fn given<P: AsRef<path::Path>>(path: P) -> Vec<fs::Result> {
             let given_closure = super::given([
                 transform::identity,
                 transform::identity,
@@ -2117,7 +2125,7 @@ mod walk {
                     Ok(content) => Box::new(
                         content
                             .into_iter()
-                            .map_while(std::result::Result::ok)
+                            .map_while(result::Result::ok)
                             .map(|entry| entry.path())
                             .flat_map(move |path| recurse_path(path, transformers))
                             .chain(
@@ -2148,6 +2156,8 @@ mod walk {
         use crate::test_helpers::{with_test_dir, TestResult};
 
         use super::{fs, transform};
+
+        use std::path;
 
         use assert_fs::prelude::*;
 
@@ -2315,7 +2325,7 @@ mod walk {
         }
 
         /// Convenience wrapper around [`super::recurse`] for use in tests.
-        fn recurse<P: AsRef<std::path::Path>>(path: P) -> Vec<fs::Result> {
+        fn recurse<P: AsRef<path::Path>>(path: P) -> Vec<fs::Result> {
             let recurse_closure = super::recurse([
                 transform::identity,
                 transform::identity,
@@ -2434,11 +2444,13 @@ mod walk {
 mod rm {
     use super::fs;
 
+    use std::result;
+
     use log::trace;
     use owo_colors::OwoColorize;
 
     /// The `Result` type for removing an [`fs::Entry`].
-    pub type Result = std::result::Result<String, fs::Error>;
+    pub type Result = result::Result<String, fs::Error>;
 
     /// Dispose of the [`fs::Entry`]; move it to the trash.
     ///
@@ -2728,7 +2740,7 @@ mod rm {
         trace!("remove {entry}");
 
         if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.72, the `io::ErrorKind` variant
+            // This case is handled explicitly because, as of Rust 1.73, the `io::ErrorKind` variant
             // is still experimental (gate "io_error_more") and so would result in an unknown error.
             // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
             // safely as `std::fs::remove_dir` doesn't remove non-empty directories.
@@ -3837,7 +3849,7 @@ mod transform {
         }
 
         #[proptest]
-        fn transform_io_error(item: walk::Item, err: std::io::Error) {
+        fn transform_io_error(item: walk::Item, err: io::Error) {
             let out = interact_transform(Err(err), item.clone());
             prop_assert_eq!(out, item.into_skipped(super::SKIP_REASON_IO_ERROR));
         }
@@ -3858,7 +3870,7 @@ mod transform {
 
         impl io::Read for FaultyReader {
             fn read(&mut self, _: &mut [u8]) -> io::Result<usize> {
-                Err(io::Error::from(std::io::ErrorKind::InvalidData))
+                Err(io::Error::from(io::ErrorKind::InvalidData))
             }
         }
 
@@ -3868,7 +3880,7 @@ mod transform {
             }
 
             fn fill_buf(&mut self) -> io::Result<&[u8]> {
-                Err(io::Error::from(std::io::ErrorKind::InvalidData))
+                Err(io::Error::from(io::ErrorKind::InvalidData))
             }
         }
 
@@ -3877,11 +3889,11 @@ mod transform {
 
         impl io::Write for FaultyWriter {
             fn write(&mut self, _: &[u8]) -> io::Result<usize> {
-                Err(io::Error::from(std::io::ErrorKind::InvalidData))
+                Err(io::Error::from(io::ErrorKind::InvalidData))
             }
 
             fn flush(&mut self) -> io::Result<()> {
-                Err(io::Error::from(std::io::ErrorKind::InvalidData))
+                Err(io::Error::from(io::ErrorKind::InvalidData))
             }
         }
     }
@@ -3996,13 +4008,16 @@ mod logging {
 /// Helpers for writing unit tests.
 #[cfg(test)]
 mod test_helpers {
+    use std::env;
+    use std::error;
+
     use assert_fs::TempDir;
 
     /// The environment variable name to enable debugging mode for tests.
     const TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
 
     /// The `Result` type used by [`with_test_dir`].
-    pub type TestResult = Result<(), Box<dyn std::error::Error>>;
+    pub type TestResult = Result<(), Box<dyn error::Error>>;
 
     /// Run a test with access to a (temporary) testing directory.
     ///
@@ -4032,7 +4047,7 @@ mod test_helpers {
     where
         C: FnOnce(&TempDir) -> TestResult,
     {
-        let debug = std::env::var_os(TEST_DEBUG_MODE).is_some();
+        let debug = env::var_os(TEST_DEBUG_MODE).is_some();
         let temp_dir = TempDir::new()?.into_persistent_if(debug);
 
         callback(&temp_dir)

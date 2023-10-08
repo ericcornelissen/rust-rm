@@ -3,6 +3,7 @@
 //! Utility functions for writing integration tests for this project.
 
 use std::env;
+use std::error;
 
 use assert_cmd::Command;
 use assert_fs::TempDir;
@@ -300,7 +301,7 @@ pub mod rm_out {
 const TEST_DEBUG_MODE: &str = "RUST_RM_DEBUG_TEST";
 
 /// The `Result` type used by [`with_test_dir`].
-pub type TestResult = Result<(), Box<dyn std::error::Error>>;
+pub type TestResult = Result<(), Box<dyn error::Error>>;
 
 /// Run a test with access to a (temporary) testing directory.
 ///

@@ -6,6 +6,8 @@ pub mod common;
 
 use crate::common::{has_exactly_lines, has_lines, with_test_dir};
 
+use std::io;
+
 use predicates::prelude::*;
 
 #[test]
@@ -79,7 +81,7 @@ fn with_test_dir_ok() {
 #[test]
 fn with_test_dir_err() {
     let out = with_test_dir(|_cmd, _test_dir| {
-        let err = Box::new(std::io::Error::new(std::io::ErrorKind::AddrInUse, "for testing"));
+        let err = Box::new(io::Error::new(io::ErrorKind::AddrInUse, "for testing"));
         Err(err)
     });
 

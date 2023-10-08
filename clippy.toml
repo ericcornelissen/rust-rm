@@ -21,6 +21,8 @@ max-suggested-slice-pattern-length = 3
 too-many-arguments-threshold = 3
 too-many-lines-threshold = 100
 
+absolute-paths-allowed-crates = ["log", "trash"]
+
 arithmetic-side-effects-allowed = []
 arithmetic-side-effects-allowed-binary = []
 arithmetic-side-effects-allowed-unary = []
