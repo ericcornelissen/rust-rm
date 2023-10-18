@@ -34,7 +34,7 @@ jobs:
             os-name: Ubuntu
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Install Rust toolchain
         env:
           TARGET: ${{ matrix.target }}
@@ -87,7 +87,7 @@ jobs:
       - build
     steps:
       - name: Checkout repository
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Fetch tags
         run: git fetch --tags --force
       - name: Get release version
