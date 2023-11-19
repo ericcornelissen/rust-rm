@@ -54,7 +54,7 @@ jobs:
       - name: Install cargo-all-features
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-all-features@1.9.0
+          tool: cargo-all-features@1.10.0
       - name: Build
         run: just ci-build
   build-nightly:
@@ -96,7 +96,7 @@ jobs:
       - name: Install cargo-all-features
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-all-features@1.9.0
+          tool: cargo-all-features@1.10.0
       - name: Build
         run: just ci-build
   coverage:
@@ -125,7 +125,7 @@ jobs:
       - name: Install cargo-tarpaulin
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-tarpaulin@0.26.1
+          tool: cargo-tarpaulin@0.27.1
       - name: Run all tests with coverage
         run: just ci-coverage
       - name: Upload coverage report
@@ -211,7 +211,7 @@ jobs:
       - name: Install cargo-mutants
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-mutants@23.6.0
+          tool: cargo-mutants@23.11.1
       - name: Run mutation tests
         run: just ci-mutation
       - name: Upload mutation report
@@ -257,7 +257,7 @@ jobs:
       - name: Install cargo-all-features
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-all-features@1.9.0
+          tool: cargo-all-features@1.10.0
       - name: Run all tests
         run: just ci-test
   test-nightly:
@@ -300,7 +300,7 @@ jobs:
       - name: Install cargo-all-features
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-all-features@1.9.0
+          tool: cargo-all-features@1.10.0
       - name: Run all tests
         run: just ci-test
   vet:
@@ -327,6 +327,6 @@ jobs:
       - name: Install cargo-all-features
         uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
         with:
-          tool: cargo-all-features@1.9.0
+          tool: cargo-all-features@1.10.0
       - name: Vet
         run: just ci-vet
