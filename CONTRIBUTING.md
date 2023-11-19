@@ -112,8 +112,8 @@ To be able to contribute you need the following tooling:
 - [Just] v1;
 - [Rust] and [Cargo] v1.74 (edition 2021) with [Clippy], [rustfmt] (see `rust-toolchain.toml`);
 - (Optional) [cargo-all-features] v1.7.0 or later;
-- (Optional) [cargo-deny] v0.13.0 or later;
-- (Optional) [cargo-mutants] v23.0.0 or later;
+- (Optional) [cargo-deny] v0.14.2 or later;
+- (Optional) [cargo-mutants] v23.5.0 or later;
 - (Optional) [cargo-tarpaulin] v0.25.0 or later;
 - (Suggested) a code editor with [EditorConfig] support;
 
