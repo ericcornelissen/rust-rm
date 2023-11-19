@@ -221,6 +221,37 @@ jobs:
           name: mutation-report
           path: _reports/mutants.out/
           retention-days: 7
+  reproducible:
+    name: Reproducible build
+    runs-on: ubuntu-22.04
+    needs:
+      - build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Cache Rust & Cargo
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        run: rustup show
+      - name: Install Just
+        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        with:
+          tool: just@1
+      - name: Build
+        run: just build
+      - name: Compute checksum
+        run: shasum target/release/rust-rm | tee checksums.txt
+      - name: Rebuild
+        run: just clean build
+      - name: Verify checksum
+        run: shasum --check checksums.txt --strict
   test:
     name: Test (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
