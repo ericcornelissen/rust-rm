@@ -2740,7 +2740,7 @@ mod rm {
         trace!("remove {entry}");
 
         if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.74, the `io::ErrorKind` variant
+            // This case is handled explicitly because, as of Rust 1.75, the `io::ErrorKind` variant
             // is still experimental (gate "io_error_more") and so would result in an unknown error.
             // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
             // safely as `std::fs::remove_dir` doesn't remove non-empty directories.

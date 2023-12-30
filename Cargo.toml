@@ -1,6 +1,5 @@
 [package]
 name = "rust-rm"
-version = "0.1.0"
 description = "A modern alternative to the rm(1) command"
 license = "Apache-2.0"
 authors = ["Eric Cornelissen <ericornelissen@gmail.com>"]

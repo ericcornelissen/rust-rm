@@ -109,6 +109,7 @@ alias v := vet
 		--output _reports/ \
 		--exclude-re cli::run \
 		--exclude-re logging \
+		--exclude-re 'main -> ExitCode' \
 		--exclude-re rm::dispose \
 		--exclude-re 'impl Display' \
 		-- \
