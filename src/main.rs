@@ -1765,7 +1765,7 @@ mod fs {
             match val {
                 trash::Error::CouldNotAccess { .. } => Self::PermissionDenied,
                 #[cfg(all(unix, not(target_os = "macos")))]
-                trash::Error::FileSystem { kind, .. } => kind.into(),
+                trash::Error::FileSystem { source, .. } => source.kind().into(),
                 trash::Error::TargetedRoot => Self::Refused,
                 _ => Self::Unknown,
             }
@@ -1803,9 +1803,9 @@ mod fs {
         #[proptest]
         #[cfg(feature = "trash")]
         #[cfg(all(unix, not(target_os = "macos")))]
-        fn from_trash_file_system(kind: io::ErrorKind, path: String) {
-            let err = trash::Error::FileSystem { kind, path: path::Path::new(&path).into() };
-            let expected: ErrorKind = kind.into();
+        fn from_trash_file_system(source: io::Error, path: String) {
+            let expected: ErrorKind = source.kind().into();
+            let err = trash::Error::FileSystem { source, path: path::Path::new(&path).into() };
             prop_assert_eq!(expected, err.into());
         }
 
