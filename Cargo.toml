@@ -26,7 +26,7 @@ test-symlink = []
 test-trash = []
 
 [dependencies]
-anstream = "0.6.5"
+anstream = "0.6.11"
 clap = { version = "4.4.7", features = ["derive"] }
 log = "0.4.20"
 owo-colors = "4.0.0"
