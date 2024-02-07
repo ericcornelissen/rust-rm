@@ -105,7 +105,7 @@ jobs:
             echo 'EOF'
           } >>"$GITHUB_OUTPUT"
       - name: Download artifacts
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         id: download
         with:
           path: ${{ runner.temp }}/artifacts
