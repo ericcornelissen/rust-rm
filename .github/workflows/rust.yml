@@ -129,7 +129,7 @@ jobs:
       - name: Run all tests with coverage
         run: just ci-coverage
       - name: Upload coverage report
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         if: ${{ failure() || success() }}
         with:
           name: coverage-report
@@ -215,7 +215,7 @@ jobs:
       - name: Run mutation tests
         run: just ci-mutation
       - name: Upload mutation report
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         if: ${{ failure() || success() }}
         with:
           name: mutation-report
