@@ -201,8 +201,11 @@ _profile_prepare:
 		--deny clippy::expect_used \
 		--deny clippy::let_underscore_untyped \
 		--deny clippy::if_then_some_else_none \
+		--deny clippy::infinite_loop \
+		--deny clippy::iter_over_hash_type \
 		--deny clippy::impl_trait_in_params \
 		--deny clippy::indexing_slicing \
+		--deny clippy::missing_asserts_for_indexing \
 		--deny clippy::missing_docs_in_private_items \
 		--deny clippy::missing_enforced_import_renames \
 		--deny clippy::print_stderr \
