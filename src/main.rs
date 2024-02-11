@@ -2162,10 +2162,25 @@ mod walk {
         use assert_fs::prelude::*;
 
         #[test]
-        fn file() -> TestResult {
+        fn empty_file() -> TestResult {
             with_test_dir(|test_dir| {
                 let file = test_dir.child("file");
                 file.touch()?;
+
+                let path = file.path();
+
+                let out = recurse(path);
+                assert_eq!(out, vec![fs::open(path)]);
+
+                Ok(())
+            })
+        }
+
+        #[test]
+        fn filled_file() -> TestResult {
+            with_test_dir(|test_dir| {
+                let file = test_dir.child("file");
+                file.write_str("Hello world!")?;
 
                 let path = file.path();
 
