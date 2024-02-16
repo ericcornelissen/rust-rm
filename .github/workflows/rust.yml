@@ -48,11 +48,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-all-features
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-all-features@1.10.0
       - name: Build
@@ -90,11 +90,11 @@ jobs:
           rustup override set nightly
           rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-all-features
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-all-features@1.10.0
       - name: Build
@@ -119,11 +119,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-tarpaulin
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-tarpaulin@0.27.3
       - name: Run all tests with coverage
@@ -157,7 +157,7 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Build docs
@@ -180,7 +180,7 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Check formatting
@@ -205,11 +205,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-mutants
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-mutants@24.2.0
       - name: Run mutation tests
@@ -241,7 +241,7 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Build
@@ -282,11 +282,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-all-features
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-all-features@1.10.0
       - name: Run all tests
@@ -325,11 +325,11 @@ jobs:
           rustup override set nightly
           rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-all-features
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-all-features@1.10.0
       - name: Run all tests
@@ -352,11 +352,11 @@ jobs:
       - name: Install Rust toolchain
         run: rustup show
       - name: Install Just
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: just@1
       - name: Install cargo-all-features
-        uses: taiki-e/install-action@e07b619ce2f1b995233833f3582c6e72d0a50127 # v2.19.0
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
           tool: cargo-all-features@1.10.0
       - name: Vet
