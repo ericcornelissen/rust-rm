@@ -22,6 +22,17 @@ too-many-arguments-threshold = 3
 too-many-lines-threshold = 100
 
 absolute-paths-allowed-crates = ["log", "trash"]
+allowed-duplicate-crates = [
+    "windows",
+    "windows-targets",
+    "windows_aarch64_gnullvm",
+    "windows_aarch64_msvc",
+    "windows_i686_gnu",
+    "windows_i686_msvc",
+    "windows_x86_64_gnu",
+    "windows_x86_64_gnullvm",
+    "windows_x86_64_msvc",
+]
 
 arithmetic-side-effects-allowed = []
 arithmetic-side-effects-allowed-binary = []
