@@ -198,6 +198,7 @@ _profile_prepare:
 		--deny clippy::arithmetic_side_effects \
 		--deny clippy::dbg_macro \
 		--deny clippy::disallowed_script_idents \
+		--deny clippy::empty_enum_variants_with_brackets \
 		--deny clippy::expect_used \
 		--deny clippy::let_underscore_untyped \
 		--deny clippy::if_then_some_else_none \
