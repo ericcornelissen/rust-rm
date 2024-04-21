@@ -1,0 +1,29 @@
+name: Dev
+on:
+  pull_request:
+    paths:
+      - .github/workflows/dev.yml
+      - Cargo.lock
+      - Cargo.toml
+      - Containerfile.dev
+      - Justfile
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+
+jobs:
+  container:
+    name: Container
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+      - name: Install Just
+        uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
+        with:
+          tool: just@1
+      - name: Build
+        run: just dev-img

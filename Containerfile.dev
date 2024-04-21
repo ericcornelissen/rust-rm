@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT-0
+
+FROM docker.io/rust:1.77.0-alpine3.19
+
+RUN apk add --no-cache \
+	bash git just libressl-dev musl-dev perl
+
+RUN cargo install \
+	cargo-all-features@1.10.0 \
+	cargo-deny@0.14.11 \
+	cargo-mutants@24.3.0 \
+	cargo-tarpaulin@0.28.0
+
+WORKDIR /rust-rm
+COPY ./ ./
+
+ENTRYPOINT ["/bin/bash"]
