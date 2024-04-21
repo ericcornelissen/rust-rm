@@ -74,6 +74,23 @@ alias v := vet
 		{{FEATURES}}
 	mv _reports/coverage/tarpaulin-report.html _reports/coverage/coverage-unit.html
 
+# Run an ephemeral development environment container
+@dev-env engine="docker":
+	just dev-img {{engine}}
+	{{engine}} run -it \
+		--rm \
+		--workdir '/rust-rm' \
+		--mount "type=bind,source=$(pwd),target=/rust-rm" \
+		--name 'rust-rm-dev-env' \
+		'rust-rm-dev-img'
+
+# Build a development environment container image
+@dev-img engine="docker":
+	{{engine}} build \
+		--file 'Containerfile.dev' \
+		--tag 'rust-rm-dev-img' \
+		.
+
 # Generate documentation for the project and dependencies
 @docs:
 	cargo doc \

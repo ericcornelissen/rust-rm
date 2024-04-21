@@ -125,7 +125,7 @@ jobs:
       - name: Install cargo-tarpaulin
         uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
-          tool: cargo-tarpaulin@0.27.3
+          tool: cargo-tarpaulin@0.28.0
       - name: Run all tests with coverage
         run: just ci-coverage
       - name: Upload coverage report
@@ -213,7 +213,7 @@ jobs:
       - name: Install cargo-mutants
         uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
-          tool: cargo-mutants@24.2.0
+          tool: cargo-mutants@24.3.0
       - name: Run mutation tests
         run: just ci-mutation
       - name: Upload mutation report

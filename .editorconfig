@@ -8,6 +8,9 @@ insert_final_newline=true
 max_line_length=100
 trim_trailing_whitespace=true
 
+[Containerfile*]
+indent_style=tab
+
 [Justfile]
 indent_style=tab
 
