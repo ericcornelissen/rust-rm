@@ -1,7 +1,7 @@
 # Check out rustup at: https://rust-lang.github.io/rustup/index.html
 
 [toolchain]
-channel = "1.77.0"
+channel = "1.78.0"
 components = [
     "cargo",
     "clippy",
