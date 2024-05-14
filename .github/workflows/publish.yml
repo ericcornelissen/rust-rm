@@ -21,7 +21,7 @@ jobs:
             os: macos-14
             os-name: MacOS
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             os-name: Ubuntu
           - target: x86_64-apple-darwin
             os: macos-14
@@ -30,7 +30,7 @@ jobs:
             os: windows-2022
             os-name: Windows
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             os-name: Ubuntu
     steps:
       - name: Checkout repository
@@ -80,7 +80,7 @@ jobs:
           retention-days: 1
   github-release:
     name: GitHub Release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: write # To create a GitHub Release
     needs:
