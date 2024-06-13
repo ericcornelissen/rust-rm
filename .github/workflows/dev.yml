@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Install Just
         uses: taiki-e/install-action@bd71f121e3951933204a4d1cf9256d934f5600a5 # v2.27.0
         with:
