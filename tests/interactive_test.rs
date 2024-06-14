@@ -624,7 +624,7 @@ fn not_found() -> TestResult {
     })
 }
 
-/// Re-usable test for validating the behaviour of a correct negative answer.
+/// Re-usable test for validating the behavior of a correct negative answer.
 fn test_answer_no(answer: &str) -> TestResult {
     let filename = "file";
 
@@ -656,7 +656,7 @@ fn test_answer_no(answer: &str) -> TestResult {
     })
 }
 
-/// Re-usable test for validating the behaviour of a correct positive answer.
+/// Re-usable test for validating the behavior of a correct positive answer.
 fn test_answer_yes(answer: &str) -> TestResult {
     let filename = "file";
 
