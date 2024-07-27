@@ -231,6 +231,7 @@ _profile_prepare:
 		--deny clippy::rc_buffer \
 		--deny clippy::rc_mutex \
 		--deny clippy::ref_patterns \
+		--deny clippy::renamed_function_params \
 		--deny clippy::string_lit_chars_any \
 		--deny clippy::unwrap_used \
 		\

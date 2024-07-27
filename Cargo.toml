@@ -40,6 +40,9 @@ proptest = "1.5.0"
 proptest-attr-macro = "1.0.0"
 proptest-derive = "0.4.0"
 
+[lints.rust]
+unexpected_cfgs = { level = "deny", check-cfg = ['cfg(tarpaulin_include)'] }
+
 [profile.release]
 debug = false
 debug-assertions = false
