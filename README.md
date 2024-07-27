@@ -62,7 +62,7 @@ rm -fq file1 file2
 
 ## Build from Source
 
-To build from source you need [Rust] and [Cargo], v1.79 or higher, installed on your system. Then
+To build from source you need [Rust] and [Cargo], v1.80 or higher, installed on your system. Then
 run the command:
 
 ```shell
