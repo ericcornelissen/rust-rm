@@ -55,7 +55,7 @@ use assert_fs::TempDir;
 ///     assert_eq!(false, has_exactly_lines!("line1\n", "line3\n"; "line2\n").eval(test_str));
 /// }
 /// ```
-#[allow(unused_macros)]
+#[allow(unused_macros, reason = "used in other test files")]
 macro_rules! has_exactly_lines {
     ($($line:expr),* $(,)?) => {
         // Base predicate.
@@ -123,7 +123,7 @@ macro_rules! has_exactly_lines {
 ///     assert_eq!(false, has_lines!("line1\n"; "line2\n").eval(test_str));
 /// }
 /// ```
-#[allow(unused_macros)]
+#[allow(unused_macros, reason = "used in other test files")]
 macro_rules! has_lines {
     ($($line:expr),* $(,)?) => {
         // Base predicate.
@@ -138,7 +138,7 @@ macro_rules! has_lines {
     };
 }
 
-#[allow(unused_imports)]
+#[allow(unused_imports, reason = "used in other test files")]
 pub(crate) use {has_exactly_lines, has_lines};
 
 /// Test helpers to generate strings used by the CLI to prompt the user.

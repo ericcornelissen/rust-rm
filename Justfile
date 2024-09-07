@@ -213,10 +213,12 @@ _profile_prepare:
 		--deny clippy::absolute_paths \
 		--deny clippy::allow_attributes_without_reason \
 		--deny clippy::arithmetic_side_effects \
+		--deny clippy::cfg_not_test \
 		--deny clippy::dbg_macro \
 		--deny clippy::disallowed_script_idents \
 		--deny clippy::empty_enum_variants_with_brackets \
 		--deny clippy::expect_used \
+		--deny clippy::field_scoped_visibility_modifiers \
 		--deny clippy::let_underscore_untyped \
 		--deny clippy::if_then_some_else_none \
 		--deny clippy::infinite_loop \

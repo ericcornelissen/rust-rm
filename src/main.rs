@@ -58,7 +58,7 @@ mod cli {
     #[derive(Parser)]
     #[command(name = "rm", version = None)]
     #[command(about = "Remove (unlink) the PATH(s)", long_about)]
-    #[allow(clippy::struct_excessive_bools)]
+    #[allow(clippy::struct_excessive_bools, reason = "CLI options are not a state machine")]
     pub struct Args {
         /// Ignore nonexistent files and directories.
         #[arg(short = 'b', long)]
@@ -2375,7 +2375,6 @@ mod walk {
         use proptest_derive::Arbitrary;
 
         #[proptest]
-        #[allow(clippy::indexing_slicing)]
         fn transforms(item: Item, index: TransformersIndex) {
             prop_assume!(item.skip_reason.is_none());
 
@@ -2386,13 +2385,15 @@ mod walk {
                 transform_identity,
                 transform_identity,
             ];
-            transformers[index.0] = transform_fixed;
+
+            if let Some(transformer) = transformers.get_mut(index.0) {
+                *transformer = transform_fixed;
+            }
 
             prop_assert_eq!(visit(item.clone(), transformers), Some(transform_fixed(item).inner));
         }
 
         #[proptest]
-        #[allow(clippy::indexing_slicing)]
         fn skips(item: Item, index: TransformersIndex) {
             let mut transformers: Transformers = [
                 transform_identity,
@@ -2401,7 +2402,10 @@ mod walk {
                 transform_identity,
                 transform_identity,
             ];
-            transformers[index.0] = transform_skip;
+
+            if let Some(transformer) = transformers.get_mut(index.0) {
+                *transformer = transform_skip;
+            }
 
             prop_assert_eq!(visit(item, transformers), None);
         }
@@ -2418,7 +2422,6 @@ mod walk {
         }
 
         /// A [`super::transform::Transformer`] that transforms all values into the skipped item.
-        #[allow(clippy::unnecessary_wraps)]
         fn transform_skip(item: Item) -> Item {
             item.into_skipped("some reason")
         }
@@ -2755,7 +2758,7 @@ mod rm {
         trace!("remove {entry}");
 
         if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.80, the `io::ErrorKind` variant
+            // This case is handled explicitly because, as of Rust 1.81, the `io::ErrorKind` variant
             // is still experimental (gate "io_error_more") and so would result in an unknown error.
             // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
             // safely as `std::fs::remove_dir` doesn't remove non-empty directories.
@@ -3070,7 +3073,8 @@ mod rm {
     ///
     /// This function will never return an error.
     #[cfg(feature = "trash")]
-    #[allow(clippy::needless_pass_by_value, clippy::unnecessary_wraps)]
+    #[allow(clippy::needless_pass_by_value, reason = "Should consume since file is removed")]
+    #[allow(clippy::unnecessary_wraps, reason = "Wrap for consistent function signature")]
     pub fn show_dispose(entry: fs::Entry) -> Result {
         Ok(format!("Would move {} to trash", entry.bold()))
     }
@@ -3100,7 +3104,8 @@ mod rm {
     /// # Errors
     ///
     /// This function will never return an error.
-    #[allow(clippy::needless_pass_by_value, clippy::unnecessary_wraps)]
+    #[allow(clippy::needless_pass_by_value, reason = "Should consume since file is removed")]
+    #[allow(clippy::unnecessary_wraps, reason = "Wrap for consistent function signature")]
     pub fn show_remove(entry: fs::Entry) -> Result {
         Ok(format!("Would remove {}", entry.bold()))
     }
