@@ -228,6 +228,7 @@ _profile_prepare:
 		--deny clippy::missing_asserts_for_indexing \
 		--deny clippy::missing_docs_in_private_items \
 		--deny clippy::missing_enforced_import_renames \
+		--deny clippy::pathbuf_init_then_push \
 		--deny clippy::print_stderr \
 		--deny clippy::print_stdout \
 		--deny clippy::rc_buffer \
@@ -235,9 +236,8 @@ _profile_prepare:
 		--deny clippy::ref_patterns \
 		--deny clippy::renamed_function_params \
 		--deny clippy::string_lit_chars_any \
-		--deny clippy::unwrap_used \
-		\
-		--allow clippy::ignored_unit_patterns
+		--deny clippy::unused_result_ok \
+		--deny clippy::unwrap_used
 
 @_vet_verify_project:
 	echo 'Running "cargo verify-project"...'
