@@ -11,7 +11,7 @@ RUN cargo install \
 	cargo-all-features@1.10.0 \
 	cargo-deny@0.14.11 \
 	cargo-mutants@24.3.0 \
-	cargo-tarpaulin@0.28.0
+	cargo-tarpaulin@0.31.2
 
 WORKDIR /rust-rm
 COPY ./ ./
