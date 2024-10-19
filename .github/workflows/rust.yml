@@ -125,7 +125,7 @@ jobs:
       - name: Install cargo-tarpaulin
         uses: taiki-e/install-action@3e71e7135de310b70bc22dccb4d275acde8e055a # v2.42.0
         with:
-          tool: cargo-tarpaulin@0.28.0
+          tool: cargo-tarpaulin@0.31.2
       - name: Run all tests with coverage
         run: just ci-coverage
       - name: Upload coverage report

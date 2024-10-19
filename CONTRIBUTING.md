@@ -114,7 +114,7 @@ To be able to contribute you need the following tooling:
 - (Optional) [cargo-all-features] v1.7.0 or later;
 - (Optional) [cargo-deny] v0.14.2 or later;
 - (Optional) [cargo-mutants] v23.5.0 or later;
-- (Optional) [cargo-tarpaulin] v0.25.0 or later;
+- (Optional) [cargo-tarpaulin] v0.31.2 or later;
 - (Suggested) a code editor with [EditorConfig] support;
 
 [cargo]: https://doc.rust-lang.org/stable/cargo/
