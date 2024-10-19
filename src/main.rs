@@ -988,7 +988,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 const KNOWN_FLAG_PATTERN: &str = "\
                     --blind|-b|\
                     --dir|-d|\
@@ -1033,7 +1033,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 let size_range = 1..=16;
                 prop::collection::vec(TestArg::arbitrary(), size_range)
                     .prop_map(|v| Self(v.into_iter().map(TestArg::inner).collect()))
@@ -1075,7 +1075,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 let size_range = 1..=16;
                 prop::collection::vec(TestArg::arbitrary(), size_range)
                     .prop_flat_map(|vec| (0..vec.len(), Just(vec)))
@@ -1100,7 +1100,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 const KNOWN_VAR_PATTERN: &str = "RUST_RM_GNU_MODE|DEBUG";
                 const GENERAL_VAR_PATTERN: &str = "[a-zA-Z_]+";
 
@@ -1135,7 +1135,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 let size_range = 1..=16;
                 prop::collection::vec(TestVar::arbitrary(), size_range)
                     .prop_map(|v| Self(v.into_iter().map(TestVar::inner).collect()))
@@ -1165,7 +1165,7 @@ mod cli {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 let size_range = 1..=16;
                 prop::collection::vec(TestVar::arbitrary(), size_range)
                     .prop_flat_map(|vec| (0..vec.len(), Just(vec)))
@@ -2758,7 +2758,7 @@ mod rm {
         trace!("remove {entry}");
 
         if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.81, the `io::ErrorKind` variant
+            // This case is handled explicitly because, as of Rust 1.82, the `io::ErrorKind` variant
             // is still experimental (gate "io_error_more") and so would result in an unknown error.
             // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
             // safely as `std::fs::remove_dir` doesn't remove non-empty directories.
@@ -3284,7 +3284,7 @@ mod transform {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 "(\\.\\.?SEPARATOR)*\\."
                     .prop_map(|v| CurrentDirPath(v.replace("SEPARATOR", MAIN_SEPARATOR_STR)))
                     .boxed()
@@ -3301,7 +3301,7 @@ mod transform {
             type Parameters = ();
             type Strategy = BoxedStrategy<Self>;
 
-            fn arbitrary_with(_: ()) -> Self::Strategy {
+            fn arbitrary_with((): ()) -> Self::Strategy {
                 "(\\.\\.?SEPARATOR)*\\.\\."
                     .prop_map(|v| ParentDirPath(v.replace("SEPARATOR", MAIN_SEPARATOR_STR)))
                     .boxed()
