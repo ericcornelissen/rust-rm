@@ -36,7 +36,7 @@ mod cli {
     use clap::error::Error;
     use clap::Parser;
     use log::{error, info, trace};
-    use owo_colors::OwoColorize;
+    use owo_colors::OwoColorize as _;
 
     #[cfg(test)]
     use proptest_derive::Arbitrary;
@@ -111,7 +111,7 @@ mod cli {
     mod test_args {
         use super::Args;
 
-        use clap::CommandFactory;
+        use clap::CommandFactory as _;
 
         #[test]
         fn clap_verification() {
@@ -1182,12 +1182,12 @@ mod fs {
     use std::ffi::OsString;
     use std::fmt;
     use std::fs::{read_dir, symlink_metadata, File};
-    use std::io::{self, Read};
+    use std::io::{self, Read as _};
     use std::path::{Path, PathBuf};
     use std::result;
 
     use log::trace;
-    use owo_colors::OwoColorize;
+    use owo_colors::OwoColorize as _;
 
     #[cfg(test)]
     use proptest_derive::Arbitrary;
@@ -1658,7 +1658,7 @@ mod fs {
     mod test_error {
         use super::{Error, ErrorKind};
 
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -1752,6 +1752,7 @@ mod fs {
     impl From<io::ErrorKind> for ErrorKind {
         fn from(val: io::ErrorKind) -> Self {
             match val {
+                io::ErrorKind::DirectoryNotEmpty => Self::DirectoryNotEmpty,
                 io::ErrorKind::NotFound => Self::NotFound,
                 io::ErrorKind::PermissionDenied => Self::PermissionDenied,
                 _ => Self::Unknown,
@@ -2465,7 +2466,7 @@ mod rm {
     use std::result;
 
     use log::trace;
-    use owo_colors::OwoColorize;
+    use owo_colors::OwoColorize as _;
 
     /// The `Result` type for removing an [`fs::Entry`].
     pub type Result = result::Result<String, fs::Error>;
@@ -2494,7 +2495,7 @@ mod rm {
         use super::{dispose, fs};
 
         use assert_fs::prelude::*;
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use predicates::prelude::*;
 
         #[test]
@@ -2756,15 +2757,6 @@ mod rm {
         use std::fs::{remove_dir, remove_file};
 
         trace!("remove {entry}");
-
-        if entry.is_dir() && !fs::is_empty(&entry) {
-            // This case is handled explicitly because, as of Rust 1.82, the `io::ErrorKind` variant
-            // is still experimental (gate "io_error_more") and so would result in an unknown error.
-            // This implementation leaves a possibility for a TOCTOU issue, but this will be handled
-            // safely as `std::fs::remove_dir` doesn't remove non-empty directories.
-            return Err(entry.into_err(fs::ErrorKind::DirectoryNotEmpty));
-        }
-
         let path = entry.path();
         let result = match entry.kind() {
             fs::EntryKind::Dir => remove_dir(path),
@@ -2794,7 +2786,7 @@ mod rm {
         use super::{fs, remove};
 
         use assert_fs::prelude::*;
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use predicates::prelude::*;
 
         #[test]
@@ -3085,7 +3077,7 @@ mod rm {
     mod test_show_dispose {
         use super::{fs, show_dispose};
 
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -3115,7 +3107,7 @@ mod rm {
     mod test_show_remove {
         use super::{fs, show_remove};
 
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
 
@@ -3135,7 +3127,7 @@ mod transform {
     use std::io;
     use std::path::Path;
 
-    use owo_colors::OwoColorize;
+    use owo_colors::OwoColorize as _;
 
     /// A function that may change a [`walk::Item`] into a different-but-related [`walk::Item`].
     pub type Transformer = fn(walk::Item) -> walk::Item;
@@ -3631,7 +3623,7 @@ mod transform {
         use std::io;
 
         use assert_fs::prelude::*;
-        use owo_colors::OwoColorize;
+        use owo_colors::OwoColorize as _;
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
         use proptest_derive::Arbitrary;
@@ -4013,7 +4005,7 @@ mod logging {
 
         fn log(&self, record: &log::Record<'_>) {
             use anstream::{eprintln, println};
-            use owo_colors::OwoColorize;
+            use owo_colors::OwoColorize as _;
 
             match record.level() {
                 log::Level::Error => eprintln!("{}", record.args()),
