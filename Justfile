@@ -149,6 +149,13 @@ _profile_prepare:
 	`mkdir profile_fs/nested_dir`;
 	for(1..750) { `touch profile_fs/nested_dir/file-$_`; }
 
+# Check if the build is reproducible
+@reproducible: clean
+	just build
+	shasum target/release/rust-rm | tee checksums.txt
+	just clean build
+	shasum --check checksums.txt --strict
+
 # Run rm with the given arguments
 @run *ARGS:
 	cargo run \
