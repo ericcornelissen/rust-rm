@@ -237,6 +237,7 @@ _profile_prepare:
 		--deny clippy::renamed_function_params \
 		--deny clippy::string_lit_chars_any \
 		--deny clippy::unused_result_ok \
+		--deny clippy::unused_trait_names \
 		--deny clippy::unwrap_used
 
 @_vet_verify_project:
