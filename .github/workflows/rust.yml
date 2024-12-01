@@ -254,14 +254,8 @@ jobs:
         uses: taiki-e/install-action@3e71e7135de310b70bc22dccb4d275acde8e055a # v2.42.0
         with:
           tool: just@1
-      - name: Build
-        run: just build
-      - name: Compute checksum
-        run: shasum target/release/rust-rm | tee checksums.txt
-      - name: Rebuild
-        run: just clean build
-      - name: Verify checksum
-        run: shasum --check checksums.txt --strict
+      - name: Check reproducibility
+        run: just reproducible
   test:
     name: Test (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
