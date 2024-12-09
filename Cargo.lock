@@ -528,6 +528,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "caff54706df99d2a78a5a4e3455ff45448d81ef1bb63c22cd14052ca0e993a3f"
 
 [[package]]
+name = "percent-encoding"
+version = "2.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -836,9 +842,9 @@ dependencies = [
 
 [[package]]
 name = "trash"
-version = "5.1.1"
+version = "5.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33caf2a9be1812a263a4bfce74d2de225fcde12ee7b77001361abd2b34ffdcc4"
+checksum = "a8e5ca62c20366b4685e3e41fba17bc7c9bbdcb82e65a89d6fda2ceea5fffd2f"
 dependencies = [
  "chrono",
  "libc",
@@ -846,6 +852,7 @@ dependencies = [
  "objc2",
  "objc2-foundation",
  "once_cell",
+ "percent-encoding",
  "scopeguard",
  "urlencoding",
  "windows 0.56.0",
