@@ -48,7 +48,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -123,7 +126,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -159,7 +165,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -184,7 +193,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -211,7 +223,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -249,7 +264,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -286,7 +304,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
@@ -360,7 +381,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust toolchain
-        run: rustup show
+        run: |
+          rustup install nightly
+          rustup override set nightly
+          rustup show
       - name: Install Just
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
