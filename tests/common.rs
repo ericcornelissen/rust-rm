@@ -57,7 +57,7 @@ use assert_fs::TempDir;
 /// ```
 #[allow(unused_macros, reason = "used in other test files")]
 macro_rules! has_exactly_lines {
-    ($($line:expr),* $(,)?) => {
+    ($($line:expr_2021),* $(,)?) => {
         // Base predicate.
         predicates::str::contains("").normalize()
         // Contains all strings ...
@@ -68,7 +68,7 @@ macro_rules! has_exactly_lines {
         }))
         // ... means it only has these lines.
     };
-    ($($line:expr),* ; $($last_line:expr),* $(,)?) => {
+    ($($line:expr_2021),* ; $($last_line:expr_2021),* $(,)?) => {
         has_exactly_lines!($( $line, )* $( $last_line, )*).and(
             predicates::str::ends_with([$( $last_line, )*].join(""))
         )
@@ -125,13 +125,13 @@ macro_rules! has_exactly_lines {
 /// ```
 #[allow(unused_macros, reason = "used in other test files")]
 macro_rules! has_lines {
-    ($($line:expr),* $(,)?) => {
+    ($($line:expr_2021),* $(,)?) => {
         // Base predicate.
         predicates::str::contains("").normalize()
         // Contains all strings ...
         $( .and(predicates::str::contains($line)) )*
     };
-    ($($line:expr),* ; $($last_line:expr),* $(,)?) => {
+    ($($line:expr_2021),* ; $($last_line:expr_2021),* $(,)?) => {
         has_lines!($( $line, )* $( $last_line, )*).and(
             predicates::str::ends_with([$( $last_line, )*].join(""))
         )
