@@ -10,25 +10,25 @@ alias v := vet
 
 # Audit the project for known vulnerabilities
 @audit:
-	cargo deny check advisories \
+	cargo +nightly deny check advisories \
 		--config ./deny.toml
 
 # Build the rm binary
 @build:
-	cargo build \
+	cargo +nightly build \
 		{{BUILD_ARGS}} \
 		{{FEATURES}}
 
 [private]
 @build-each:
-	cargo build-all-features \
+	cargo +nightly build-all-features \
 		{{BUILD_ARGS}}
 
 # Reset the repository to a clean state
 @clean: _clean_cargo _clean_git
 
 @_clean_cargo:
-	cargo clean
+	cargo +nightly clean
 
 @_clean_git:
 	git clean -fx \
@@ -45,12 +45,12 @@ alias v := vet
 
 # Check license compliance
 @compliance:
-	cargo deny check licenses \
+	cargo +nightly deny check licenses \
 		--config ./deny.toml
 
 # Produce a coverage report for all tests
 @coverage:
-	cargo tarpaulin \
+	cargo +nightly tarpaulin \
 		{{COVERAGE_ARGS}} \
 		{{TEST_FEATURES}} \
 		{{FEATURES}}
@@ -58,7 +58,7 @@ alias v := vet
 
 # Produce a coverage report for integration tests
 @coverage-integration:
-	cargo tarpaulin \
+	cargo +nightly tarpaulin \
 		{{COVERAGE_ARGS}} \
 		{{TEST_INTEGRATION_ARGS}} \
 		{{TEST_FEATURES}} \
@@ -67,7 +67,7 @@ alias v := vet
 
 # Produce a coverage report for unit tests
 @coverage-unit:
-	cargo tarpaulin \
+	cargo +nightly tarpaulin \
 		{{COVERAGE_ARGS}} \
 		{{TEST_UNIT_ARGS}} \
 		{{TEST_FEATURES}} \
@@ -93,16 +93,16 @@ alias v := vet
 
 # Generate documentation for the project and dependencies
 @docs:
-	cargo doc \
+	cargo +nightly doc \
 		{{DOCS_ARGS}}
 
 # Format the source code
 @fmt:
-	cargo fmt
+	cargo +nightly fmt
 
 [private]
 @fmt-check:
-	cargo fmt --check
+	cargo +nightly fmt --check
 
 # Get the (minimum) number of lines of source code
 @loc:
@@ -122,7 +122,7 @@ alias v := vet
 
 # Run mutation tests
 @mutation:
-	cargo mutants \
+	cargo +nightly mutants \
 		--output _reports/ \
 		--exclude-re cli::run \
 		--exclude-re logging \
@@ -136,7 +136,7 @@ alias v := vet
 # Profile with visualization using <https://github.com/brendangregg/FlameGraph>
 [private]
 @profile: _profile_prepare
-	cargo build {{FEATURES}}
+	cargo +nightly build {{FEATURES}}
 	perf record -F99 --call-graph dwarf -- \
 		just run --dir --recursive --force profile_fs
 	perf script | ./stackcollapse-perf.pl | ./flamegraph.pl > perf.svg
@@ -158,21 +158,21 @@ _profile_prepare:
 
 # Run rm with the given arguments
 @run *ARGS:
-	cargo run \
+	cargo +nightly run \
 		{{FEATURES}} \
 		-- \
 		{{ARGS}}
 
 # Run all tests
 @test:
-	cargo test \
+	cargo +nightly test \
 		{{TEST_ARGS}} \
 		{{TEST_FEATURES}} \
 		{{FEATURES}}
 
 # Run all integration tests
 @test-integration:
-	cargo test \
+	cargo +nightly test \
 		{{TEST_ARGS}} \
 		{{TEST_INTEGRATION_ARGS}} \
 		{{TEST_FEATURES}} \
@@ -180,7 +180,7 @@ _profile_prepare:
 
 # Run all unit tests
 @test-unit:
-	cargo test \
+	cargo +nightly test \
 		{{TEST_ARGS}} \
 		{{TEST_UNIT_ARGS}} \
 		{{TEST_FEATURES}} \
@@ -188,7 +188,7 @@ _profile_prepare:
 
 [private]
 @test-each:
-	cargo test-all-features \
+	cargo +nightly test-all-features \
 		{{TEST_ARGS}} \
 		{{TEST_FEATURES}}
 
@@ -200,12 +200,12 @@ _profile_prepare:
 
 @_vet_check:
 	echo 'Running "cargo check"...'
-	cargo {{ if ci == TRUE { "check-all-features" } else { "check" } }} \
+	cargo +nightly {{ if ci == TRUE { "check-all-features" } else { "check" } }} \
 		{{CI_ONLY_CARGO_ARGS}}
 
 @_vet_clippy:
 	echo 'Running "cargo clippy"...'
-	cargo clippy \
+	cargo +nightly clippy \
 		--no-deps \
 		--tests \
 		-- \
@@ -249,7 +249,7 @@ _profile_prepare:
 
 @_vet_verify_project:
 	echo 'Running "cargo verify-project"...'
-	cargo verify-project \
+	cargo +nightly verify-project \
 		--quiet \
 		{{CI_ONLY_CARGO_ARGS}}
 
