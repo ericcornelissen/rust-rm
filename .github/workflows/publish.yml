@@ -27,7 +27,7 @@ jobs:
             os: macos-14
             os-name: MacOS
           - target: x86_64-pc-windows-msvc
-            os: windows-2022
+            os: windows-2025
             os-name: Windows
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-24.04
