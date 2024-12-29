@@ -200,6 +200,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Cache Rust & Cargo
         uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
@@ -220,6 +221,16 @@ jobs:
         uses: taiki-e/install-action@6aa8b420a527920162babdd71d780f9e5b3b4bc8 # v2.46.1
         with:
           tool: cargo-mutants@24.3.0
+      - name: Determine diff for mutation testing on push
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          git diff 4b825dc642cb6eb9a060e54bf8d69288fbee4904 HEAD >changes.diff
+      - name: Determine diff for mutation testing on Pull Request
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git diff "origin/$BASE" >changes.diff
       - name: Run mutation tests
         run: just ci-mutation
       - name: Upload mutation report

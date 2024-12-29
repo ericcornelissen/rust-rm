@@ -129,6 +129,7 @@ alias v := vet
 		--exclude-re 'main -> ExitCode' \
 		--exclude-re rm::dispose \
 		--exclude-re 'impl Display' \
+		{{MUTATION_ARGS}} \
 		-- \
 		{{TEST_UNIT_ARGS}} \
 		{{TEST_FEATURES}}
@@ -314,6 +315,7 @@ STD_TEST_ARGS := ""
 
 CI_ONLY_CARGO_ARGS := if ci == TRUE { "--locked" } else { "" }
 CI_ONLY_COVERAGE_ARGS := if ci == TRUE { "--out lcov" } else { "" }
+CI_ONLY_MUTATION_ARGS := if ci == TRUE { "--in-diff changes.diff" } else { "" }
 CI_ONLY_TEST_ARGS := if ci == TRUE { "--no-fail-fast" } else { "" }
 
 ALL_TEST_FEATURES := "test-dangerous,test-symlink,test-trash"
@@ -321,6 +323,7 @@ ALL_TEST_FEATURES := "test-dangerous,test-symlink,test-trash"
 BUILD_ARGS := STD_BUILD_ARGS + " " + CI_ONLY_CARGO_ARGS
 COVERAGE_ARGS := STD_COVERAGE_ARGS + " " + CI_ONLY_CARGO_ARGS + " " + CI_ONLY_COVERAGE_ARGS
 DOCS_ARGS := STD_DOCS_ARGS + " " + CI_ONLY_CARGO_ARGS
+MUTATION_ARGS := CI_ONLY_MUTATION_ARGS
 TEST_ARGS := STD_TEST_ARGS + " " + CI_ONLY_TEST_ARGS + " " + CI_ONLY_CARGO_ARGS
 TEST_INTEGRATION_ARGS := "--test '*'"
 TEST_UNIT_ARGS := "--bins"
