@@ -6,7 +6,7 @@ authors = ["Eric Cornelissen <ericornelissen@gmail.com>"]
 repository = "https://github.com/ericcornelissen/rust-rm"
 keywords = ["cli", "rm", "trash"]
 categories = ["development-tools", "filesystem"]
-rust-version = "1.83"
+rust-version = "1.84"
 edition = "2021"
 
 [features]
@@ -42,7 +42,7 @@ proptest-attr-macro = "1.0.0"
 proptest-derive = "0.5.0"
 
 [lints.rust]
-unexpected_cfgs = { level = "deny", check-cfg = ['cfg(tarpaulin_include)'] }
+unexpected_cfgs = { level = "deny", check-cfg = ['cfg(feature, values("test"))', 'cfg(tarpaulin_include)'] }
 
 [profile.release]
 debug = false

@@ -232,9 +232,12 @@ _profile_prepare:
 		--deny clippy::iter_over_hash_type \
 		--deny clippy::impl_trait_in_params \
 		--deny clippy::indexing_slicing \
+		--deny clippy::map_with_unused_argument_over_ranges \
 		--deny clippy::missing_asserts_for_indexing \
 		--deny clippy::missing_docs_in_private_items \
 		--deny clippy::missing_enforced_import_renames \
+		--deny clippy::module_name_repetitions \
+		--deny clippy::non_zero_suggestions \
 		--deny clippy::pathbuf_init_then_push \
 		--deny clippy::print_stderr \
 		--deny clippy::print_stdout \
