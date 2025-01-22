@@ -1,0 +1,6 @@
+# Check out CodeQL at: https://codeql.github.com/
+
+name: rust-rm CodeQL config
+
+queries:
+  - uses: security-extended
