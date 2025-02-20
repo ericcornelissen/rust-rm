@@ -8,7 +8,7 @@
 
 pub mod common;
 
-use crate::common::{has_exactly_lines, rm_out, with_test_dir, TestResult};
+use crate::common::{TestResult, has_exactly_lines, rm_out, with_test_dir};
 
 use predicates::prelude::*;
 

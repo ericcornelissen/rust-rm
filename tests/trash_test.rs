@@ -7,7 +7,7 @@
 
 pub mod common;
 
-use crate::common::{has_exactly_lines, rm_out, TestResult};
+use crate::common::{TestResult, has_exactly_lines, rm_out};
 
 use assert_fs::prelude::*;
 use predicates::prelude::*;

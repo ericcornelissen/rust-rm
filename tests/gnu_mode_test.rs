@@ -4,7 +4,7 @@
 
 pub mod common;
 
-use crate::common::{rm_ask, rm_out, TestResult};
+use crate::common::{TestResult, rm_ask, rm_out};
 
 use assert_fs::prelude::*;
 use predicates::prelude::*;

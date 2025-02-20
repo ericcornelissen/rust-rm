@@ -33,8 +33,8 @@ mod cli {
 
     use std::ffi::OsString;
 
-    use clap::error::Error;
     use clap::Parser;
+    use clap::error::Error;
     use log::{error, info, trace};
     use owo_colors::OwoColorize as _;
 
@@ -148,7 +148,7 @@ mod cli {
     /// Tests for the [`parse_args`] function.
     #[cfg(test)]
     mod test_parse_args {
-        use super::test_helpers::{parse_args, TestArgs, TestArgsAndIndex};
+        use super::test_helpers::{TestArgs, TestArgsAndIndex, parse_args};
 
         use super::Vars;
 
@@ -916,11 +916,7 @@ mod cli {
             lang::pluralize("error", errored),
         );
 
-        if errored > 0 {
-            Err(())
-        } else {
-            Ok(())
-        }
+        if errored > 0 { Err(()) } else { Ok(()) }
     }
 
     /// Helpers for writing unit tests in or using this module.
@@ -1181,7 +1177,7 @@ mod fs {
     use std::error;
     use std::ffi::OsString;
     use std::fmt;
-    use std::fs::{read_dir, symlink_metadata, File};
+    use std::fs::{File, read_dir, symlink_metadata};
     use std::io::{self, Read as _};
     use std::path::{Path, PathBuf};
     use std::result;
@@ -1225,9 +1221,9 @@ mod fs {
     /// Tests for the [`open`] function.
     #[cfg(test)]
     mod test_open {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
-        use super::{open, Entry, EntryKind, Error, ErrorKind};
+        use super::{Entry, EntryKind, Error, ErrorKind, open};
 
         use assert_fs::prelude::*;
 
@@ -1309,9 +1305,9 @@ mod fs {
 
     #[cfg(test)]
     mod test_is_empty {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
-        use super::{is_empty, Entry, EntryKind};
+        use super::{Entry, EntryKind, is_empty};
 
         use assert_fs::prelude::*;
 
@@ -1915,7 +1911,7 @@ mod walk {
     /// Tests for the [`Item`] struct.
     #[cfg(test)]
     mod test_item {
-        use super::{fs, Item};
+        use super::{Item, fs};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -1974,7 +1970,7 @@ mod walk {
     /// Tests for the [`given`] function.
     #[cfg(test)]
     mod test_given {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
         use super::{fs, transform};
 
@@ -2154,7 +2150,7 @@ mod walk {
     /// Tests for the [`recurse`] function.
     #[cfg(test)]
     mod test_recurse {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
         use super::{fs, transform};
 
@@ -2369,7 +2365,7 @@ mod walk {
     /// Tests for the [`visit`] function.
     #[cfg(test)]
     mod test_visit {
-        use super::{fs, visit, Item, Transformers};
+        use super::{Item, Transformers, fs, visit};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -2436,7 +2432,7 @@ mod walk {
     /// Helpers for writing unit tests in or using this module.
     #[cfg(test)]
     mod test_helpers {
-        use super::{fs, Item};
+        use super::{Item, fs};
 
         impl Item {
             /// Returns the reason why the [`Item`] should *not* be removed, if any.
@@ -2490,7 +2486,7 @@ mod rm {
     #[cfg(test)]
     #[cfg(feature = "trash")]
     mod test_dispose {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
         use super::{dispose, fs};
 
@@ -2781,7 +2777,7 @@ mod rm {
     /// Tests for the [`remove`] function.
     #[cfg(test)]
     mod test_remove {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
         use super::{fs, remove};
 
@@ -3172,7 +3168,7 @@ mod transform {
     /// Tests for the [`disallow_all_dirs`] function.
     #[cfg(test)]
     mod test_disallow_all_dirs {
-        use super::{disallow_all_dirs, fs, walk, TIP_IS_DIR};
+        use super::{TIP_IS_DIR, disallow_all_dirs, fs, walk};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -3227,7 +3223,7 @@ mod transform {
     mod test_disallow_current_and_parent_dir {
         use super::{disallow_current_and_parent_dir, fs, walk};
 
-        use std::path::{Path, MAIN_SEPARATOR_STR};
+        use std::path::{MAIN_SEPARATOR_STR, Path};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -3321,9 +3317,9 @@ mod transform {
     /// Tests for the [`disallow_filled_dirs`] function.
     #[cfg(test)]
     mod test_disallow_filled_dirs {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
-        use super::{disallow_filled_dirs, fs, walk, TIP_DIR_NOT_EMPTY};
+        use super::{TIP_DIR_NOT_EMPTY, disallow_filled_dirs, fs, walk};
 
         use assert_fs::prelude::*;
         use proptest::prelude::*;
@@ -3488,11 +3484,7 @@ mod transform {
     /// for how to avoid it. Return all other values untouched.
     pub fn tip_not_found(mut item: walk::Item) -> walk::Item {
         item.inner = item.inner.map_err(|err| {
-            if err.kind() == fs::ErrorKind::NotFound {
-                err.with_tip(TIP_NOT_FOUND)
-            } else {
-                err
-            }
+            if err.kind() == fs::ErrorKind::NotFound { err.with_tip(TIP_NOT_FOUND) } else { err }
         });
 
         item
@@ -3501,7 +3493,7 @@ mod transform {
     /// Tests for the [`tip_not_found`] function.
     #[cfg(test)]
     mod test_tip_not_found {
-        use super::{fs, tip_not_found, walk, TIP_NOT_FOUND};
+        use super::{TIP_NOT_FOUND, fs, tip_not_found, walk};
 
         use proptest::prelude::*;
         use proptest_attr_macro::proptest;
@@ -3616,7 +3608,7 @@ mod transform {
     /// Tests for the [`interactive`] and related functions.
     #[cfg(test)]
     mod test_interactive {
-        use crate::test_helpers::{with_test_dir, TestResult};
+        use crate::test_helpers::{TestResult, with_test_dir};
 
         use super::{fs, interact_transform, new_prompt_for, prompt, walk};
 
@@ -3916,11 +3908,7 @@ mod lang {
     /// Pluralize a noun based on the number of associated items. The count is always included in
     /// the return value.
     pub fn pluralize(noun: &str, count: usize) -> String {
-        if count == 1 {
-            format!("{count} {noun}")
-        } else {
-            format!("{count} {noun}s")
-        }
+        if count == 1 { format!("{count} {noun}") } else { format!("{count} {noun}s") }
     }
 
     /// Tests for the [`pluralize`] function.

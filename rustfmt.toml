@@ -1,6 +1,6 @@
 # Check out rustfmt at: https://rust-lang.github.io/rustfmt/
 
-edition = "2021"
+edition = "2024"
 
 disable_all_formatting = false
 newline_style = "Unix"

@@ -4,7 +4,7 @@
 
 pub mod common;
 
-use crate::common::{has_exactly_lines, has_lines, rm_ask, rm_out, TestResult};
+use crate::common::{TestResult, has_exactly_lines, has_lines, rm_ask, rm_out};
 
 use std::path::MAIN_SEPARATOR;
 

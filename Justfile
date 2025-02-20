@@ -221,9 +221,11 @@ _profile_prepare:
 		--deny clippy::absolute_paths \
 		--deny clippy::allow_attributes_without_reason \
 		--deny clippy::arithmetic_side_effects \
+		--deny clippy::as_pointer_underscore \
 		--deny clippy::cfg_not_test \
 		--deny clippy::dbg_macro \
 		--deny clippy::disallowed_script_idents \
+		--deny clippy::doc_include_without_cfg \
 		--deny clippy::empty_enum_variants_with_brackets \
 		--deny clippy::expect_used \
 		--deny clippy::field_scoped_visibility_modifiers \

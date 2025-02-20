@@ -4,7 +4,7 @@
 
 pub mod common;
 
-use crate::common::{with_test_dir, TestResult};
+use crate::common::{TestResult, with_test_dir};
 
 #[test]
 fn normal_success() -> TestResult {
