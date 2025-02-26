@@ -46,6 +46,6 @@ jobs:
       - name: Install cargo-deny
         uses: taiki-e/install-action@7ea888af71a31437ad4e71c62d021b3bb2728ea9 # v2.49.3
         with:
-          tool: cargo-deny@0.14.11
+          tool: cargo-deny@0.18.0
       - name: Audit
         run: just ci-audit

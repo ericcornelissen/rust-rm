@@ -2,8 +2,6 @@
 
 [advisories]
 ignore = []
-unmaintained = "warn"
-vulnerability = "deny"
 yanked = "deny"
 
 [licenses]
@@ -14,7 +12,4 @@ allow = [
     "Unicode-DFS-2016",
 ]
 confidence-threshold = 0.8
-deny = []
-default = "deny"
 include-dev = true
-unlicensed = "deny"

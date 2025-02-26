@@ -131,7 +131,7 @@ jobs:
       - name: Install cargo-tarpaulin
         uses: taiki-e/install-action@7ea888af71a31437ad4e71c62d021b3bb2728ea9 # v2.49.3
         with:
-          tool: cargo-tarpaulin@0.31.2
+          tool: cargo-tarpaulin@0.32.0
       - name: Run all tests with coverage
         run: just ci-coverage
       - name: Upload coverage report
@@ -220,7 +220,7 @@ jobs:
       - name: Install cargo-mutants
         uses: taiki-e/install-action@7ea888af71a31437ad4e71c62d021b3bb2728ea9 # v2.49.3
         with:
-          tool: cargo-mutants@24.3.0
+          tool: cargo-mutants@25.0.0
       - name: Determine diff for mutation testing on push
         if: ${{ github.event_name != 'pull_request' }}
         run: |
