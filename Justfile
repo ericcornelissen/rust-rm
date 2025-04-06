@@ -242,12 +242,14 @@ _profile_prepare:
 		--deny clippy::module_name_repetitions \
 		--deny clippy::non_zero_suggestions \
 		--deny clippy::pathbuf_init_then_push \
+		--deny clippy::precedence_bits \
 		--deny clippy::print_stderr \
 		--deny clippy::print_stdout \
 		--deny clippy::rc_buffer \
 		--deny clippy::rc_mutex \
 		--deny clippy::ref_patterns \
 		--deny clippy::renamed_function_params \
+		--deny clippy::return_and_then \
 		--deny clippy::string_lit_chars_any \
 		--deny clippy::unused_result_ok \
 		--deny clippy::unused_trait_names \
