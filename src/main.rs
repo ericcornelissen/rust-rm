@@ -2247,11 +2247,11 @@ mod walk {
 
                 assert!(
                     out.iter()
-                        .filter_map(|x| if let Ok(x) = x { Some(x) } else { None })
+                        .filter_map(|x| x.clone().ok())
                         .position(|x| x.path() == nested_file_path)
                         < out
                             .iter()
-                            .filter_map(|x| if let Ok(x) = x { Some(x) } else { None })
+                            .filter_map(|x| x.clone().ok())
                             .position(|x| x.path() == nested_dir_path)
                 );
                 assert_eq!(out.last(), Some(&fs::open(dir_path)));
