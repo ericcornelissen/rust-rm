@@ -28,11 +28,11 @@ jobs:
       matrix:
         include:
           - name: MacOS
-            os: macos-14
+            os: macos-15
           - name: Ubuntu
             os: ubuntu-24.04
           - name: Windows
-            os: windows-2022
+            os: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
@@ -69,11 +69,11 @@ jobs:
       matrix:
         include:
           - name: MacOS
-            os: macos-14
+            os: macos-15
           - name: Ubuntu
             os: ubuntu-24.04
           - name: Windows
-            os: windows-2022
+            os: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
@@ -277,11 +277,11 @@ jobs:
       matrix:
         include:
           - name: MacOS
-            os: macos-14
+            os: macos-15
           - name: Ubuntu
             os: ubuntu-24.04
           - name: Windows
-            os: windows-2022
+            os: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
@@ -319,11 +319,11 @@ jobs:
       matrix:
         include:
           - name: MacOS
-            os: macos-14
+            os: macos-15
           - name: Ubuntu
             os: ubuntu-24.04
           - name: Windows
-            os: windows-2022
+            os: windows-2025
     steps:
       - name: Checkout repository
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
