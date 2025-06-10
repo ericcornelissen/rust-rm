@@ -39,7 +39,7 @@ assert_fs = "1.1.1"
 predicates = "3.1.0"
 proptest = "1.7.0"
 proptest-attr-macro = "1.0.0"
-proptest-derive = "0.5.0"
+proptest-derive = "0.6.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "deny", check-cfg = ['cfg(feature, values("test"))', 'cfg(tarpaulin_include)'] }
