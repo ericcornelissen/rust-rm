@@ -247,6 +247,7 @@ _profile_prepare:
 		--deny clippy::print_stdout \
 		--deny clippy::rc_buffer \
 		--deny clippy::rc_mutex \
+		--deny clippy::redundant_test_prefix \
 		--deny clippy::ref_patterns \
 		--deny clippy::renamed_function_params \
 		--deny clippy::return_and_then \
