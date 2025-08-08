@@ -900,8 +900,8 @@ mod cli {
                 Err(err) => error!("{err}"),
             })
             .fold((0, 0), |(oks, errs), result| match result {
-                Ok(_) => (oks.checked_add(1).unwrap_or(usize::MAX), errs),
-                Err(_) => (oks, errs.checked_add(1).unwrap_or(usize::MAX)),
+                Ok(_) => (oks.saturating_add(1), errs),
+                Err(_) => (oks, errs.saturating_add(1)),
             });
 
         info!(

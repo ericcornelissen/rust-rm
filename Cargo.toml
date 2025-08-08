@@ -6,7 +6,7 @@ authors = ["Eric Cornelissen <ericornelissen@gmail.com>"]
 repository = "https://github.com/ericcornelissen/rust-rm"
 keywords = ["cli", "rm", "trash"]
 categories = ["development-tools", "filesystem"]
-rust-version = "1.88"
+rust-version = "1.89"
 edition = "2024"
 
 [features]

@@ -242,6 +242,7 @@ _profile_prepare:
 		--deny clippy::module_name_repetitions \
 		--deny clippy::non_zero_suggestions \
 		--deny clippy::pathbuf_init_then_push \
+		--deny clippy::pointer_format \
 		--deny clippy::precedence_bits \
 		--deny clippy::print_stderr \
 		--deny clippy::print_stdout \
