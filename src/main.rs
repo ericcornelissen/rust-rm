@@ -1712,6 +1712,8 @@ mod fs {
     #[derive(Clone, Debug, Eq, PartialEq)]
     #[cfg_attr(test, derive(Arbitrary))]
     pub enum ErrorKind {
+        Debug(String, String),
+
         /// This kind corresponds to an error due to a directory not being empty.
         DirectoryNotEmpty,
 
@@ -1735,6 +1737,7 @@ mod fs {
     impl fmt::Display for ErrorKind {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match self {
+                Self::Debug(name, description) => write!(f, "debug error: {name} | {description}"),
                 Self::DirectoryNotEmpty => write!(f, "Directory not empty"),
                 Self::IsADirectory => write!(f, "Is a directory"),
                 Self::NotFound => write!(f, "Not found"),
@@ -1764,6 +1767,8 @@ mod fs {
                 #[cfg(all(unix, not(target_os = "macos")))]
                 trash::Error::FileSystem { source, .. } => source.kind().into(),
                 trash::Error::TargetedRoot => Self::Refused,
+                trash::Error::Unknown { description } => Self::Debug("unknown".to_owned(), description),
+                trash::Error::Os { code, description } => Self::Debug("os".to_owned(), format!("{code}: {description}")),
                 _ => Self::Unknown,
             }
         }
