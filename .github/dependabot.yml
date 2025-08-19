@@ -19,3 +19,11 @@ updates:
     labels:
       - ci/cd
       - dependencies
+  - package-ecosystem: rust-toolchain
+    directory: /
+    open-pull-requests-limit: 1
+    schedule:
+      interval: daily
+      time: "04:00"
+    labels:
+      - dependencies
