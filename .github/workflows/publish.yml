@@ -44,7 +44,7 @@ jobs:
           rustup show
           rustup target add "$TARGET"
       - name: Install cross
-        uses: taiki-e/install-action@aa2649f25ee7099207734772f5393fd30167cb73 # v2.58.0
+        uses: taiki-e/install-action@d6912b47771be2c443ec90dbb3d28e023987e782 # v2.62.1
         with:
           tool: cross@0.2.5
       - name: Build binary
