@@ -31,7 +31,7 @@ anstream = "0.6.20"
 clap = { version = "4.5.8", features = ["derive"] }
 log = "0.4.27"
 owo-colors = "4.2.0"
-trash = { version = "5.2.3", optional = true }
+trash = { version = "5.2.4", optional = true }
 
 [dev-dependencies]
 assert_cmd = { version = "2.0.17", features = ["color-auto"] }
