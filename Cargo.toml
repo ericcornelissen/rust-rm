@@ -34,7 +34,7 @@ owo-colors = "4.2.0"
 trash = { version = "5.2.5", optional = true }
 
 [dev-dependencies]
-assert_cmd = { version = "2.0.17", features = ["color-auto"] }
+assert_cmd = { version = "2.1.0", features = ["color-auto"] }
 assert_fs = "1.1.1"
 predicates = "3.1.0"
 proptest = "1.9.0"
