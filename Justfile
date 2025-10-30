@@ -225,6 +225,7 @@ _profile_prepare:
 		--deny clippy::cfg_not_test \
 		--deny clippy::dbg_macro \
 		--deny clippy::disallowed_script_idents \
+		--deny clippy::doc_broken_link \
 		--deny clippy::doc_include_without_cfg \
 		--deny clippy::empty_enum_variants_with_brackets \
 		--deny clippy::expect_used \
