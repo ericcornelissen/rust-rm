@@ -5,7 +5,7 @@
 use std::env;
 use std::error;
 
-use assert_cmd::Command;
+use assert_cmd::{Command, cargo};
 use assert_fs::TempDir;
 
 /// Create a predicate that verifies a `str` contains all and only the provided lines.
@@ -336,7 +336,7 @@ where
     let debug = env::var_os(TEST_DEBUG_MODE).is_some();
     let temp_dir = TempDir::new()?.into_persistent_if(debug);
 
-    let mut cmd = Command::cargo_bin("rust-rm")?;
+    let mut cmd = cargo::cargo_bin_cmd!("rust-rm");
     cmd.current_dir(&temp_dir);
 
     callback(cmd, &temp_dir)
