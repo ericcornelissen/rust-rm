@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT-0
 
-FROM docker.io/rust:1.91.0-alpine3.22
+FROM docker.io/rust:1.92.0-alpine3.22
 
 RUN apk add --no-cache \
 	bash git just libressl-dev musl-dev perl \
