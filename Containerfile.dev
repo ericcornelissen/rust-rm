@@ -9,7 +9,7 @@ RUN apk add --no-cache \
 
 RUN cargo install \
 	cargo-all-features@1.10.0 \
-	cargo-deny@0.18.5 \
+	cargo-deny@0.18.9 \
 	cargo-mutants@25.0.0 \
 	cargo-tarpaulin@0.32.0
 
