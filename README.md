@@ -10,6 +10,10 @@ A CLI like the [GNU version of `rm(1)`] but more modern and designed for humans.
 - Supports moving to thrash, thanks to the [`trash` crate];
 - Offers an excellent CLI experience, thanks to the [`clap` crate];
 
+This project has been put on hold. The `rm(1)` command from [coreutils] is probably the best Rust
+alternative out there.
+
+[coreutils]: https://github.com/uutils/coreutils
 [gnu version of `rm(1)`]: https://man7.org/linux/man-pages/man1/rm.1.html
 [`clap` crate]: https://crates.io/crates/clap
 [`trash` crate]: https://crates.io/crates/trash
